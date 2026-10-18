@@ -2469,3 +2469,82 @@ preview	Title	Esempio
 	Leave out the date and time of comments and tracked changes when saving	Ometti data e ora di commenti e revisioni al salvataggio
 	The document you are editing keeps the names and dates; only the saved file leaves them out.	Il documento che stai modificando conserva nomi e date; solo il file salvato li omette.
 	Privacy Settings	Impostazioni di privacy attuali
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Ciao! Sono GeenioAI. Chiedimi di scrivere una bozza, riscrivere, riassumere o formattare e lo farò nel documento con i comandi di WordCraft.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Per iniziare, collega il tuo account {service}: incolla la sua chiave account (inizia con {prefix}). La chiave resta su questo computer e non viene più mostrata.
+	Get an account key or top up your credit at {site}	Ottieni una chiave account o ricarica il credito su {site}
+	GeenioAI is not available in this version yet.	GeenioAI non è ancora disponibile in questa versione.
+	Connect your account first: paste its account key in the GeenioAI pane.	Collega prima il tuo account: incolla la chiave account nel riquadro GeenioAI.
+	The assistant is still working on the last request.	L'assistente sta ancora lavorando all'ultima richiesta.
+	Running {command}…	Esecuzione di {command}…
+	Running commands…	Esecuzione dei comandi…
+	Writing…	Scrittura…
+	Selecting text…	Selezione del testo…
+	Reading the document…	Lettura del documento…
+	Looking up commands…	Ricerca dei comandi…
+	Starting a new document…	Creazione di un nuovo documento…
+	Opening a document…	Apertura di un documento…
+	Saving the document…	Salvataggio del documento…
+	Working…	Al lavoro…
+	Checking the key…	Verifica della chiave…
+	The assistant wants to start a new document: the current one will be closed.	L'assistente vuole creare un nuovo documento: quello attuale verrà chiuso.
+	The assistant wants to open {path}.	L'assistente vuole aprire {path}.
+	The assistant wants to open a document.	L'assistente vuole aprire un documento.
+	The assistant wants to save the document to {path}.	L'assistente vuole salvare il documento in {path}.
+	The assistant wants to save the document.	L'assistente vuole salvare il documento.
+	The assistant wants to run {tool}.	L'assistente vuole eseguire {tool}.
+	Connected to account {conto}.	Collegato all'account {conto}.
+	What shall we write?	Cosa scriviamo?
+	The account key was changed: now connected to account {conto}.	La chiave account è stata cambiata: ora sei collegato all'account {conto}.
+	Declined: {tool}	Rifiutato: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	L'assistente ha esaurito i passi disponibili per questo turno e si è fermato; il documento conserva quanto fatto.
+	GeenioAI settings	Impostazioni di GeenioAI
+	New conversation	Nuova conversazione
+	Refresh credit	Aggiorna il credito
+	Top up credit	Ricarica il credito
+	Credit available: {usd} USD	Credito disponibile: {usd} USD
+	Allow	Consenti
+	Decline	Rifiuta
+	Summarize this document	Riassumi questo documento
+	Summarize this document in a few sentences.	Riassumi questo documento in poche frasi.
+	Suggest a title	Suggerisci un titolo
+	Suggest three possible titles for this document.	Suggerisci tre possibili titoli per questo documento.
+	Check the tone	Controlla il tono
+	Read this document and tell me whether its tone is consistent, and what to improve.	Leggi questo documento e dimmi se il tono è coerente e cosa migliorare.
+	Ask GeenioAI…	Chiedi a GeenioAI…
+	Send	Invia
+	Account key	Chiave account
+	Connect	Collega
+	Start a new conversation? The messages so far will be cleared.	Iniziare una nuova conversazione? I messaggi finora verranno cancellati.
+	Keep	Mantieni
+	Assistant language	Lingua dell'assistente
+	Automatic (the language you write in)	Automatica (la lingua in cui scrivi)
+	The interface language ({language})	La lingua dell'interfaccia ({language})
+	Suggested by the account ({model})	Suggerito dall'account ({model})
+	Suggested by the account	Suggerito dall'account
+	Search models…	Cerca modelli…
+	Loading models…	Caricamento dei modelli…
+	The models could not be loaded	Impossibile caricare i modelli
+	Account	Account
+	Connected account: {conto}	Account collegato: {conto}
+	Reading the account…	Lettura dell'account…
+	No account key is set	Nessuna chiave account impostata
+	Change account key	Cambia chiave account
+	New account key	Nuova chiave account
+	Change key	Cambia chiave
+	Draft with GeenioAI	Scrivi una bozza con GeenioAI
+	Connect your account in the GeenioAI pane to start.	Collega il tuo account nel riquadro GeenioAI per iniziare.
+	Open GeenioAI	Apri GeenioAI
+	Describe what you'd like to write	Descrivi cosa vorresti scrivere
+	Generate	Genera
+	Rewrite the selection	Riscrivi la selezione
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Riscrivi il testo selezionato perché si legga meglio, mantenendone significato, lingua e formattazione.
+	Make it shorter	Accorcia
+	Make the selected text shorter, keeping its meaning, language and formatting.	Accorcia il testo selezionato mantenendone significato, lingua e formattazione.
+	Fix spelling and grammar	Correggi ortografia e grammatica
+	Fix the spelling and grammar of the selected text; change nothing else.	Correggi ortografia e grammatica del testo selezionato; non cambiare altro.
+	Summarize the selection	Riassumi la selezione
+	Summarize the selected text in a few sentences, in the chat.	Riassumi il testo selezionato in poche frasi, nella chat.
+	Rewrite this paragraph	Riscrivi questo paragrafo
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Riscrivi il paragrafo in cui si trova il cursore perché si legga meglio, mantenendone significato, lingua e formattazione.

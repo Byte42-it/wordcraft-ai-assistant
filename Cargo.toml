@@ -24,6 +24,7 @@ wordcraft-pdf = { path = "crates/pdf" }
 wordcraft-proof = { path = "crates/proof" }
 wordcraft-engine = { path = "crates/engine" }
 wordcraft-mcp = { path = "crates/mcp" }
+wordcraft-assistant = { path = "crates/assistant" }
 wordcraft-zotero = { path = "crates/zotero" }
 wordcraft-control-key = { path = "crates/control-key" }
 wordcraft-ui-egui = { path = "crates/ui-egui" }
@@ -35,6 +36,8 @@ thiserror = "2"
 serde = { version = "1", features = ["derive", "rc"] }
 serde_json = { version = "1", features = ["float_roundtrip"] }
 log = "0.4"
+# The AI Assistant's model endpoint: a FANTASTICO account (desktop app and CLI only).
+fantastico-sdk = "0.1"
 proptest = "1"
 rayon = "1"
 unicode-bidi = "0.3"

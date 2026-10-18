@@ -42,6 +42,16 @@ USAGE:
                                               running): addEditCitation, addEditBibliography,
                                               addNote, refresh, removeCodes, setDocPrefs
                                               (--cmd runs first, e.g. --cmd caret.docEnd)
+  wordcraft-cli ask \"PROMPT\" [--file F | --template T] [--model M] [--max-steps N] [--yes]
+                    [--author NAME] [--save OUT] GeenioAI (the AI assistant) carries out PROMPT on the document
+                                              (draft, rewrite, summarize…) with WordCraft's commands,
+                                              through a FANTASTICO account:
+                                                $FANTASTICO_KEY   the account key (ck-fant-…) or
+                                                                  project key (sk-fant-…); get one, or
+                                                                  top up, at https://artcraft.fantastico.cc
+                                              --yes lets it start a new document, open and save files
+                                              without asking; --save writes the result (format from
+                                              the extension); the reply goes to stdout
   wordcraft-cli --version
 ";
 
@@ -133,6 +143,15 @@ const ZOTERO_OPTIONS: &[OptionSpec] = &[
     OptionSpec { name: "--save", takes_value: true },
     OptionSpec { name: "--trace", takes_value: false },
     OptionSpec { name: "--port", takes_value: true },
+];
+const ASK_OPTIONS: &[OptionSpec] = &[
+    OptionSpec { name: "--file", takes_value: true },
+    OptionSpec { name: "--template", takes_value: true },
+    OptionSpec { name: "--model", takes_value: true },
+    OptionSpec { name: "--max-steps", takes_value: true },
+    OptionSpec { name: "--yes", takes_value: false },
+    OptionSpec { name: "--author", takes_value: true },
+    OptionSpec { name: "--save", takes_value: true },
 ];
 
 /// Why a CLI run stopped early.
@@ -396,9 +415,160 @@ fn run(args: &[String]) -> Result<(), Failure> {
             }
             Ok(())
         }
+        "ask" => {
+            validate_options("ask", &rest, ASK_OPTIONS)?;
+            let a = parse_ask_args(&rest)?;
+            let key = std::env::var("FANTASTICO_KEY").ok().filter(|v| !v.trim().is_empty()).ok_or("ask needs a FANTASTICO key in $FANTASTICO_KEY")?;
+            let opts = fantastico_sdk::Options {
+                title: "WordCraft".into(),
+                referer: "https://github.com/storytold/wordcraft".into(),
+                ..fantastico_sdk::Options::default()
+            };
+            let client = fantastico_sdk::Fantastico::new(key, opts).map_err(|e| e.message)?;
+            // The account suggests a model; a project key has none to ask for.
+            let model = match (&a.model, client.surface()) {
+                (Some(m), _) => m.clone(),
+                (None, fantastico_sdk::Surface::Edge) => client.config().map_err(|e| e.message)?.model,
+                (None, fantastico_sdk::Surface::Runtime) => fantastico_sdk::DEFAULT_MODEL.to_string(),
+            };
+            let mut s = match (&a.file, &a.template) {
+                (Some(f), _) => open(f)?,
+                (None, Some(t)) => {
+                    let mut s = Session::new(wordcraft_doc::Document::new());
+                    s.run("file.new", &json!({"template": t})).map_err(|e| e.to_string())?;
+                    s
+                }
+                _ => Session::new(wordcraft_doc::Document::new()),
+            };
+            if let Some(name) = &a.author {
+                set_author(&mut s, name)?;
+            }
+            let mut backend = wordcraft_mcp::Headless::default();
+            backend.session = s;
+            let mut provider = FantasticoProvider(client);
+            let mut config = wordcraft_assistant::Config::new(model);
+            if let Some(n) = a.max_steps {
+                config.max_steps = n;
+            }
+            let turn = wordcraft_assistant::Agent::new(config).send(&mut provider, &mut backend, &a.prompt, &mut AskObserver { yes: a.yes });
+            if let Ok(t) = &turn {
+                let reply = t.reply.trim().to_string();
+                write_stdout(|o| writeln!(o, "{reply}"))?;
+            }
+            // Write what was done even when the turn stopped early: the file was asked for.
+            if let Some(p) = &a.save {
+                let r = if p.to_ascii_lowercase().ends_with(".png") {
+                    backend.session.run("file.exportPng", &json!({"path": p}))
+                } else {
+                    backend.session.run("file.save", &json!({"path": p}))
+                };
+                r.map_err(|e| e.to_string())?;
+                eprintln!("wrote {p}");
+            }
+            turn.map(|_| ()).map_err(|e| e.to_string().into())
+        }
         "--version" | "-V" => write_stdout(|o| writeln!(o, "wordcraft-cli {}", env!("CARGO_PKG_VERSION"))),
         "" | "help" | "--help" | "-h" => write_stdout(|o| write!(o, "{USAGE}")),
         other => Err(format!("unknown command `{other}`\n\n{USAGE}").into()),
+    }
+}
+
+/// `ask`'s arguments: one prompt and its options.
+#[derive(Debug, Default, PartialEq)]
+struct AskArgs {
+    prompt: String,
+    file: Option<String>,
+    template: Option<String>,
+    model: Option<String>,
+    max_steps: Option<usize>,
+    yes: bool,
+    author: Option<String>,
+    save: Option<String>,
+}
+
+fn parse_ask_args(rest: &[String]) -> Result<AskArgs, String> {
+    let mut a = AskArgs::default();
+    let mut prompts = Vec::new();
+    let mut i = 0;
+    while let Some(arg) = rest.get(i) {
+        // The option's value: the next argument, which can't be another option.
+        let value = || rest.get(i + 1).filter(|v| !v.starts_with("--")).cloned().ok_or_else(|| format!("ask: {arg} needs a value"));
+        match arg.as_str() {
+            "--file" => a.file = Some(value()?),
+            "--template" => a.template = Some(value()?),
+            "--model" => a.model = Some(value()?),
+            "--author" => a.author = Some(value()?),
+            "--save" => a.save = Some(value()?),
+            "--max-steps" => {
+                let v = value()?;
+                let n: usize = v.parse().map_err(|_| format!("ask: --max-steps needs a number from 1 to {}", wordcraft_assistant::MAX_STEPS))?;
+                if n == 0 || n > wordcraft_assistant::MAX_STEPS {
+                    return Err(format!("ask: --max-steps needs a number from 1 to {}", wordcraft_assistant::MAX_STEPS));
+                }
+                a.max_steps = Some(n);
+            }
+            "--yes" => {
+                a.yes = true;
+                i += 1;
+                continue;
+            }
+            other if other.starts_with("--") => return Err(format!("ask: unknown option {other}")),
+            other => {
+                prompts.push(other.to_string());
+                i += 1;
+                continue;
+            }
+        }
+        i += 2;
+    }
+    match prompts.as_slice() {
+        [one] if !one.trim().is_empty() => a.prompt = one.trim().to_string(),
+        [] | [_] => return Err(format!("ask needs a prompt\n\n{USAGE}")),
+        _ => return Err("ask takes one prompt: quote it".into()),
+    }
+    if a.file.is_some() && a.template.is_some() {
+        return Err("ask: choose one of --file and --template".into());
+    }
+    Ok(a)
+}
+
+/// The assistant's model endpoint for `ask`: a FANTASTICO account.
+struct FantasticoProvider(fantastico_sdk::Fantastico);
+
+impl wordcraft_assistant::Provider for FantasticoProvider {
+    fn complete(&mut self, request: &Value) -> Result<Value, String> {
+        self.0.chat_completion(request).map_err(|e| format!("{} ({})", e.message, e.code))
+    }
+}
+
+/// `ask` on a terminal: progress on stderr, confirmations asked on stdin.
+struct AskObserver {
+    yes: bool,
+}
+
+impl wordcraft_assistant::Observer for AskObserver {
+    fn confirm(&mut self, name: &str, arguments: &Value) -> bool {
+        use std::io::IsTerminal;
+        if self.yes {
+            return true;
+        }
+        if !std::io::stdin().is_terminal() {
+            eprintln!("   declined `{name}`: pass --yes to allow it");
+            return false;
+        }
+        eprint!("   allow `{name}` {}? [y/N] ", clip(&arguments.to_string()));
+        let mut line = String::new();
+        std::io::stdin().read_line(&mut line).is_ok() && matches!(line.trim().to_ascii_lowercase().as_str(), "y" | "yes")
+    }
+    fn event(&mut self, e: wordcraft_assistant::Event<'_>) {
+        use wordcraft_assistant::Event;
+        match e {
+            Event::ToolCall { name, arguments } => eprintln!("-> {name} {}", clip(&arguments.to_string())),
+            Event::ToolResult { ok: false, text, .. } => eprintln!("   error: {}", clip(text)),
+            Event::Declined { name } => eprintln!("   declined `{name}`"),
+            // The reply goes to stdout at the end.
+            Event::Text(_) | Event::ToolResult { .. } => {}
+        }
     }
 }
 
@@ -479,6 +649,36 @@ mod tests {
         assert_eq!(run(&args(&["info", "missing.docx", "--passwrod", "x"])), Err("info: unknown option --passwrod".into()));
         assert_eq!(run(&args(&["render", "missing.docx", "out.png", "--sclae", "2"])), Err("render: unknown option --sclae".into()));
         assert_eq!(run(&args(&["zotero", "refresh", "missing.docx", "--prot", "1"])), Err("zotero: unknown option --prot".into()));
+    }
+
+    #[test]
+    fn ask_takes_one_prompt_and_options() {
+        let a = parse_ask_args(&args(&["draft a letter", "--template", "letter", "--model", "m", "--max-steps", "5", "--yes", "--save", "o.docx"]))
+            .unwrap();
+        assert_eq!(a.prompt, "draft a letter");
+        assert!(a.yes);
+        assert_eq!((a.template.as_deref(), a.model.as_deref(), a.max_steps, a.save.as_deref()), (Some("letter"), Some("m"), Some(5), Some("o.docx")));
+        assert!(validate_options("ask", &args(&["p", "--file", "in.docx", "--author", "Claude"]), ASK_OPTIONS).is_ok());
+        for bad in [
+            &[][..],
+            &["  "],
+            &["a", "b"],
+            &["p", "--model"],
+            &["p", "--model", "--yes"],
+            &["p", "--max-steps", "0"],
+            &["p", "--max-steps", "99999999999999999999999"],
+            &["p", "--max-steps", "-1"],
+            &["p", "--file", "a.docx", "--template", "letter"],
+            &["p", "--frobnicate"],
+        ] {
+            assert!(parse_ask_args(&args(bad)).is_err(), "{bad:?}");
+        }
+        // Without a key nothing is sent and the error says where the key goes.
+        let had = std::env::var_os("FANTASTICO_KEY");
+        if had.is_none() {
+            let e = run(&args(&["ask", "hello"])).unwrap_err().to_string();
+            assert!(e.contains("FANTASTICO_KEY"), "{e}");
+        }
     }
 
     #[test]

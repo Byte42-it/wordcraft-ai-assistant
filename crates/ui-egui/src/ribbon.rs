@@ -784,6 +784,11 @@ fn insert(app: &mut WordApp, ui: &mut Ui) {
                 mi(ui, app, "Studio cover", "insert.coverPage", json!({}));
             });
             small(ui, app, "blankPage", Some("Blank Page"), "Blank Page", "insert.blankPage", json!({}), false);
+    // GeenioAI, the AI assistant pane, where Word's Home tab ends with its Copilot button.
+    group(ui, "GeenioAI", None, app, |ui, app| {
+        let open = app.assistant.open;
+        big_toggle(ui, app, "assistant", "GeenioAI", "ui.assistant", open);
+    });
             small(ui, app, "pageBreak", Some("Page Break"), "Page Break", "insert.pageBreak", json!({}), false);
         });
     });

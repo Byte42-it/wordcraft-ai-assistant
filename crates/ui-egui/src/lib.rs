@@ -22,6 +22,7 @@ macro_rules! tl {
 
 pub mod a11y;
 pub mod a11y_pane;
+pub mod assistant;
 pub mod autoscroll;
 pub mod backstage;
 pub mod canvas;
@@ -263,6 +264,10 @@ pub struct UiState {
     pub update_fields_before_print: bool,
     /// The custom dictionary (File › Options › Proofing, Add to Dictionary), kept between runs.
     pub dictionary: Vec<String>,
+    /// GeenioAI (AI assistant) settings: the reply language (`auto`, `interface`, `en`) and the chosen
+    /// model (empty: the account's suggestion). The assistant owns them while running.
+    pub assistant_language: String,
+    pub assistant_model: String,
 }
 
 /// Most recent documents kept (File › Options › Advanced offers 0–50, as Word does).
@@ -313,6 +318,8 @@ impl Default for UiState {
             print_backgrounds: false,
             update_fields_before_print: false,
             dictionary: Vec::new(),
+            assistant_language: "auto".into(),
+            assistant_model: String::new(),
         }
     }
 }
@@ -439,6 +446,8 @@ pub struct WordApp {
     pub(crate) ctx: Option<egui::Context>,
     /// Read Aloud: the start of the sentence the caret was last moved to, and the last error shown.
     pub(crate) read_aloud_at: Option<wordcraft_engine::doc::Pos>,
+    /// GeenioAI, the AI assistant pane and margin icon ([`assistant`]).
+    pub assistant: assistant::Assistant,
     pub(crate) read_aloud_error: Option<String>,
     /// The file the document was last explicitly saved to in this session; AutoSave writes only
     /// there. A file that was merely opened isn't rewritten until the user saves it: saving drops
@@ -536,6 +545,7 @@ impl WordApp {
             read_aloud_error: None,
             autosave_path: None,
             change_picture_target: None,
+            assistant: assistant::Assistant::default(),
             recipient_list_pending: false,
             font_generation: wordcraft_fonts::FontDb::global().generation(),
             dialog_pick: None,
@@ -593,6 +603,8 @@ impl WordApp {
 
     /// Restore preferences saved by [`WordApp::prefs`].
     pub fn apply_prefs(&mut self, ui: UiState) {
+        ui.assistant_language = self.assistant.language.code().into();
+        ui.assistant_model = self.assistant.model.clone().unwrap_or_default();
         self.ui = ui;
         self.ui.backstage = false;
         // A `ui.json` from before the theme setting: its dark-mode switch picks Dark or Light.
@@ -633,6 +645,10 @@ impl WordApp {
     /// Run a command the user asked for (ribbon, shortcut, Backstage, file drop). New, Open,
     /// Close, Envelopes, Labels and Finish & Merge on a document with unsaved changes first ask
     /// Save / Don't Save / Cancel, and the command runs once that is answered (`ui.saveChanges`).
+        // The assistant owns its settings from here on; `prefs` copies them back when saving.
+        // Junk values read as the defaults.
+        self.assistant.set_language(assistant::Language::parse(&self.ui.assistant_language).unwrap_or_default());
+        self.assistant.set_model(Some(std::mem::take(&mut self.ui.assistant_model)));
     pub fn run(&mut self, id: &str, params: Value) -> Result<Value, String> {
         // A button whose command needs input the user hasn't given yet opens its dialog (#240).
         if let Some(name) = input_dialog(id, &params)
@@ -1041,6 +1057,28 @@ impl WordApp {
                     return Some(Err("select a picture first".into()));
                 };
                 self.change_picture_target = Some(media);
+            // GeenioAI, the AI assistant pane (Home › GeenioAI): `value` shows or hides it, none toggles.
+            "ui.assistant" => {
+                let open = p.get("value").and_then(Value::as_bool).unwrap_or(!self.assistant.open);
+                if open {
+                    assistant::open(self);
+                } else {
+                    self.assistant.open = false;
+                }
+                json!({"open": self.assistant.open, "available": self.assistant.available(), "connected": self.assistant.ready()})
+            }
+            // Ask the assistant: the pane opens and `prompt` is sent with the document context
+            // (the selection, or where the caret is). `draft` asks for the answer in the document.
+            "ui.assistant.ask" => {
+                let Some(prompt) = s("prompt").map(str::trim).filter(|t| !t.is_empty()) else { return Some(Err("missing `prompt`".into())) };
+                let draft = p.get("draft").and_then(Value::as_bool).unwrap_or(false);
+                let ctx = self.ctx.clone().unwrap_or_default();
+                assistant::open(self);
+                if let Err(e) = assistant::ask(self, &ctx, prompt, draft) {
+                    return Some(Err(e));
+                }
+                json!({"sent": true})
+            }
                 self.pick_picture();
                 json!({"pending": self.change_picture_target.is_some()})
             }
@@ -1433,6 +1471,7 @@ impl WordApp {
         self.clear_stale_change_picture();
         let _ = self.poll_file_dialog();
         self.drain_inbox();
+        assistant::tick(self, ctx);
         self.watch_fonts(ctx);
         self.autosave_tick(now_ms());
         if self.autosaves() && self.session.dirty {
