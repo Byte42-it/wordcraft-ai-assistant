@@ -21,6 +21,7 @@ wordcraft-ui-egui = { workspace = true }
 wordcraft-control-key = { workspace = true }
 # The AI Assistant's model endpoint: a FANTASTICO account (`assistant_host`).
 wordcraft-assistant = { workspace = true }
+wordcraft-fantastico = { workspace = true }
 fantastico-sdk = { workspace = true }
 eframe = { workspace = true, features = ["default_fonts", "wgpu", "accesskit", "wayland", "x11", "links"] }
 egui = { workspace = true }

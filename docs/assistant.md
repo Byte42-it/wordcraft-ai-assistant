@@ -1,6 +1,6 @@
 # GeenioAI, the AI assistant
 
-> **Last reviewed:** 2026-10-18 · **Last updated:** 2026-10-18 · **Change:** first version (the in-app assistant, gaps #25) · **Target:** Microsoft Word (Microsoft 365) Copilot pane and margin icon
+> **Last reviewed:** 2026-10-18 · **Last updated:** 2026-10-18 · **Change:** minor (streaming replies through `wordcraft-fantastico`; the interface strings in all 18 languages; previously major: first version, gaps #25) · **Target:** Microsoft Word (Microsoft 365) Copilot pane and margin icon
 
 WordCraft's answer to Word's Copilot: a chat pane and a margin icon whose agent writes and edits
 the open document with WordCraft's own commands. Any model can sit behind it: the desktop app and
@@ -49,15 +49,17 @@ step**: Undo takes back everything a request changed.
 |---|---|---|
 | L5 | `wordcraft-assistant` | The agent loop: the model asks for tools, they run against any `wordcraft_mcp::Backend` (a headless session or the app), their results go back until the model answers. No network code: the host brings the model as a `Provider` (OpenAI-style chat completions). Model output is hostile input: at most 20 steps a turn and 16 tool calls a reply, cut results, malformed arguments and unknown tools answered with errors, old turns forgotten whole. Out of steps, the model gets one last call without tools to say what it did |
 | L6 | `wordcraft-ui-egui::assistant` | The pane and the margin icon. The loop runs on a worker thread; its tools reach the document through the control methods, run on the UI thread each frame (`tick`), joined into one undo step per turn |
-| app | `apps/wordcraft/src/assistant_host.rs` | The FANTASTICO host: the key store and the `fantastico-sdk` client (models, balance, chat completions) |
+| L5 (native) | `wordcraft-fantastico` | A FANTASTICO account as a streaming `Provider`: a transport of its own under `fantastico-sdk` reads the provider's server-sent events for a `stream: true` request, hands every piece of text on, and gives the SDK the same JSON a whole reply would carry (keys, retries and error classification stay the SDK's). Native only (`Class::Native` in the layer table): the web build never sees it |
+| app | `apps/wordcraft/src/assistant_host.rs` | The FANTASTICO host: the key store and the `fantastico-sdk` client (models, balance); conversations run on `wordcraft-fantastico` |
 
 The tools offered to the model are the command-level MCP tools: `get_text`, `inspect_document`,
 `select_text`, `type_text`, `execute`, `batch`, `list_commands`, and, behind a confirmation,
 `new_document`, `open_document`, `save_document`. Pictures and pointer tools stay out.
 
+Replies stream: the pane shows the model's text as it arrives, in a bubble that fills up (`Provider::complete_streaming`, `Delta`); `wordcraft-cli ask` prints it as it comes. An endpoint that can't stream answers whole.
+
 ## Known gaps
 
-- No streaming: the reply shows when the turn ends (the status line shows what it is doing).
 - No tracked changes for the assistant's edits (Word's Copilot rewrites offer a Keep/Discard
   preview); Undo takes a turn back in one go.
 - No "Visualize as a table" or other Copilot-specific actions beyond the ones above.
@@ -68,4 +70,5 @@ The tools offered to the model are the command-level MCP tools: `get_text`, `ins
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-18 | minor | Streaming replies (`wordcraft-fantastico`, `Provider::complete_streaming`); the interface strings translated in every catalog |
 | 2026-10-18 | major | First version: pane, margin icon, FANTASTICO host, `wordcraft-cli ask` |

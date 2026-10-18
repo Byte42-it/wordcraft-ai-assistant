@@ -2484,3 +2484,82 @@ preview	Title	Пример
 	Leave out the date and time of comments and tracked changes when saving	Не сохранять дату и время примечаний и отслеживаемых изменений
 	The document you are editing keeps the names and dates; only the saved file leaves them out.	Редактируемый документ сохраняет имена и даты; их не будет только в сохранённом файле.
 	Privacy Settings	Текущие параметры конфиденциальности
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Привет! Я GeenioAI. Попросите меня написать черновик, переписать, кратко изложить или отформатировать текст, и я сделаю это в документе командами WordCraft.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Для начала подключите свой аккаунт {service}: вставьте его ключ аккаунта (он начинается с {prefix}). Ключ остаётся на этом компьютере и больше никогда не показывается.
+	Get an account key or top up your credit at {site}	Получить ключ аккаунта или пополнить баланс можно на {site}
+	GeenioAI is not available in this version yet.	GeenioAI в этой версии пока недоступен.
+	Connect your account first: paste its account key in the GeenioAI pane.	Сначала подключите аккаунт: вставьте ключ аккаунта в панели GeenioAI.
+	The assistant is still working on the last request.	Ассистент ещё работает над последним запросом.
+	Running {command}…	Выполняется {command}…
+	Running commands…	Выполняются команды…
+	Writing…	Пишу…
+	Selecting text…	Выделяю текст…
+	Reading the document…	Читаю документ…
+	Looking up commands…	Ищу команды…
+	Starting a new document…	Создаю новый документ…
+	Opening a document…	Открываю документ…
+	Saving the document…	Сохраняю документ…
+	Working…	Работаю…
+	Checking the key…	Проверяю ключ…
+	The assistant wants to start a new document: the current one will be closed.	Ассистент хочет создать новый документ: текущий будет закрыт.
+	The assistant wants to open {path}.	Ассистент хочет открыть {path}.
+	The assistant wants to open a document.	Ассистент хочет открыть документ.
+	The assistant wants to save the document to {path}.	Ассистент хочет сохранить документ в {path}.
+	The assistant wants to save the document.	Ассистент хочет сохранить документ.
+	The assistant wants to run {tool}.	Ассистент хочет выполнить {tool}.
+	Connected to account {conto}.	Подключено к аккаунту {conto}.
+	What shall we write?	Что напишем?
+	The account key was changed: now connected to account {conto}.	Ключ аккаунта изменён: теперь подключён аккаунт {conto}.
+	Declined: {tool}	Отклонено: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	У ассистента закончились шаги на этот ход, и он остановился; документ сохраняет сделанное.
+	GeenioAI settings	Настройки GeenioAI
+	New conversation	Новый разговор
+	Refresh credit	Обновить баланс
+	Top up credit	Пополнить баланс
+	Credit available: {usd} USD	Доступный баланс: {usd} USD
+	Allow	Разрешить
+	Decline	Отклонить
+	Summarize this document	Кратко изложить документ
+	Summarize this document in a few sentences.	Кратко изложи этот документ в нескольких предложениях.
+	Suggest a title	Предложить заголовок
+	Suggest three possible titles for this document.	Предложи три возможных заголовка для этого документа.
+	Check the tone	Проверить тон
+	Read this document and tell me whether its tone is consistent, and what to improve.	Прочитай этот документ и скажи, выдержан ли тон и что стоит улучшить.
+	Ask GeenioAI…	Спросить GeenioAI…
+	Send	Отправить
+	Account key	Ключ аккаунта
+	Connect	Подключить
+	Start a new conversation? The messages so far will be cleared.	Начать новый разговор? Предыдущие сообщения будут удалены.
+	Keep	Оставить
+	Assistant language	Язык ассистента
+	Automatic (the language you write in)	Автоматически (язык, на котором вы пишете)
+	The interface language ({language})	Язык интерфейса ({language})
+	Suggested by the account ({model})	Рекомендация аккаунта ({model})
+	Suggested by the account	Рекомендация аккаунта
+	Search models…	Поиск моделей…
+	Loading models…	Загрузка моделей…
+	The models could not be loaded	Не удалось загрузить модели
+	Account	Аккаунт
+	Connected account: {conto}	Подключённый аккаунт: {conto}
+	Reading the account…	Читаю аккаунт…
+	No account key is set	Ключ аккаунта не задан
+	Change account key	Сменить ключ аккаунта
+	New account key	Новый ключ аккаунта
+	Change key	Сменить ключ
+	Draft with GeenioAI	Черновик с GeenioAI
+	Connect your account in the GeenioAI pane to start.	Чтобы начать, подключите аккаунт в панели GeenioAI.
+	Open GeenioAI	Открыть GeenioAI
+	Describe what you'd like to write	Опишите, что вы хотите написать
+	Generate	Создать
+	Rewrite the selection	Переписать выделенное
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Перепиши выделенный текст, чтобы он читался лучше, сохранив смысл, язык и форматирование.
+	Make it shorter	Сократить
+	Make the selected text shorter, keeping its meaning, language and formatting.	Сократи выделенный текст, сохранив смысл, язык и форматирование.
+	Fix spelling and grammar	Исправить орфографию и грамматику
+	Fix the spelling and grammar of the selected text; change nothing else.	Исправь орфографию и грамматику выделенного текста; больше ничего не меняй.
+	Summarize the selection	Кратко изложить выделенное
+	Summarize the selected text in a few sentences, in the chat.	Кратко изложи выделенный текст в нескольких предложениях, в чате.
+	Rewrite this paragraph	Переписать этот абзац
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Перепиши абзац, в котором стоит курсор, чтобы он читался лучше, сохранив смысл, язык и форматирование.

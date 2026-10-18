@@ -2090,3 +2090,82 @@
 	Leave out the date and time of comments and tracked changes when saving	Při ukládání vynechat datum a čas komentářů a sledovaných změn
 	The document you are editing keeps the names and dates; only the saved file leaves them out.	Upravovaný dokument si jména a data ponechá; vynechá je jen uložený soubor.
 	Privacy Settings	Aktuální nastavení soukromí
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Ahoj! Jsem GeenioAI. Požádej mě o návrh textu, přepsání, shrnutí nebo formátování a udělám to v dokumentu příkazy WordCraftu.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Nejprve připoj svůj účet {service}: vlož jeho klíč účtu (začíná na {prefix}). Klíč zůstává v tomto počítači a už se nikdy nezobrazí.
+	Get an account key or top up your credit at {site}	Klíč účtu získáš nebo kredit dobiješ na {site}
+	GeenioAI is not available in this version yet.	GeenioAI v této verzi zatím není k dispozici.
+	Connect your account first: paste its account key in the GeenioAI pane.	Nejprve připoj svůj účet: vlož klíč účtu v podokně GeenioAI.
+	The assistant is still working on the last request.	Asistent stále pracuje na poslední žádosti.
+	Running {command}…	Spouští se {command}…
+	Running commands…	Spouštějí se příkazy…
+	Writing…	Píše se…
+	Selecting text…	Vybírá se text…
+	Reading the document…	Čte se dokument…
+	Looking up commands…	Hledají se příkazy…
+	Starting a new document…	Vytváří se nový dokument…
+	Opening a document…	Otevírá se dokument…
+	Saving the document…	Ukládá se dokument…
+	Working…	Pracuji…
+	Checking the key…	Ověřuje se klíč…
+	The assistant wants to start a new document: the current one will be closed.	Asistent chce vytvořit nový dokument: aktuální bude zavřen.
+	The assistant wants to open {path}.	Asistent chce otevřít {path}.
+	The assistant wants to open a document.	Asistent chce otevřít dokument.
+	The assistant wants to save the document to {path}.	Asistent chce uložit dokument do {path}.
+	The assistant wants to save the document.	Asistent chce uložit dokument.
+	The assistant wants to run {tool}.	Asistent chce spustit {tool}.
+	Connected to account {conto}.	Připojeno k účtu {conto}.
+	What shall we write?	Co napíšeme?
+	The account key was changed: now connected to account {conto}.	Klíč účtu byl změněn: nyní jsi připojen k účtu {conto}.
+	Declined: {tool}	Odmítnuto: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	Asistentovi došly kroky pro toto kolo a zastavil se; dokument si ponechá, co udělal.
+	GeenioAI settings	Nastavení GeenioAI
+	New conversation	Nová konverzace
+	Refresh credit	Obnovit kredit
+	Top up credit	Dobít kredit
+	Credit available: {usd} USD	Dostupný kredit: {usd} USD
+	Allow	Povolit
+	Decline	Odmítnout
+	Summarize this document	Shrnout tento dokument
+	Summarize this document in a few sentences.	Shrň tento dokument do několika vět.
+	Suggest a title	Navrhnout název
+	Suggest three possible titles for this document.	Navrhni tři možné názvy tohoto dokumentu.
+	Check the tone	Zkontrolovat tón
+	Read this document and tell me whether its tone is consistent, and what to improve.	Přečti tento dokument a řekni mi, zda je jeho tón jednotný a co zlepšit.
+	Ask GeenioAI…	Zeptej se GeenioAI…
+	Send	Odeslat
+	Account key	Klíč účtu
+	Connect	Připojit
+	Start a new conversation? The messages so far will be cleared.	Začít novou konverzaci? Dosavadní zprávy budou smazány.
+	Keep	Ponechat
+	Assistant language	Jazyk asistenta
+	Automatic (the language you write in)	Automaticky (jazyk, kterým píšeš)
+	The interface language ({language})	Jazyk rozhraní ({language})
+	Suggested by the account ({model})	Doporučeno účtem ({model})
+	Suggested by the account	Doporučeno účtem
+	Search models…	Hledat modely…
+	Loading models…	Načítají se modely…
+	The models could not be loaded	Modely se nepodařilo načíst
+	Account	Účet
+	Connected account: {conto}	Připojený účet: {conto}
+	Reading the account…	Čte se účet…
+	No account key is set	Není nastaven žádný klíč účtu
+	Change account key	Změnit klíč účtu
+	New account key	Nový klíč účtu
+	Change key	Změnit klíč
+	Draft with GeenioAI	Návrh s GeenioAI
+	Connect your account in the GeenioAI pane to start.	Pro začátek připoj svůj účet v podokně GeenioAI.
+	Open GeenioAI	Otevřít GeenioAI
+	Describe what you'd like to write	Popiš, co chceš napsat
+	Generate	Vytvořit
+	Rewrite the selection	Přepsat výběr
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Přepiš vybraný text tak, aby se lépe četl; zachovej jeho význam, jazyk a formátování.
+	Make it shorter	Zkrátit
+	Make the selected text shorter, keeping its meaning, language and formatting.	Zkrať vybraný text; zachovej jeho význam, jazyk a formátování.
+	Fix spelling and grammar	Opravit pravopis a gramatiku
+	Fix the spelling and grammar of the selected text; change nothing else.	Oprav pravopis a gramatiku vybraného textu; nic jiného neměň.
+	Summarize the selection	Shrnout výběr
+	Summarize the selected text in a few sentences, in the chat.	Shrň vybraný text do několika vět, v chatu.
+	Rewrite this paragraph	Přepsat tento odstavec
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Přepiš odstavec, ve kterém je kurzor, tak, aby se lépe četl; zachovej jeho význam, jazyk a formátování.

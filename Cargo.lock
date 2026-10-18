@@ -5277,6 +5277,7 @@ dependencies = [
  "wordcraft-control-key",
  "wordcraft-doc",
  "wordcraft-engine",
+ "wordcraft-fantastico",
  "wordcraft-fonts",
  "wordcraft-proof",
  "wordcraft-ui-egui",
@@ -5303,6 +5304,7 @@ dependencies = [
  "wordcraft-assistant",
  "wordcraft-doc",
  "wordcraft-engine",
+ "wordcraft-fantastico",
  "wordcraft-mcp",
  "wordcraft-render",
  "wordcraft-zotero",
@@ -5385,6 +5387,17 @@ dependencies = [
  "wordcraft-render",
  "zeroize",
  "zip",
+]
+
+[[package]]
+name = "wordcraft-fantastico"
+version = "0.6.1"
+dependencies = [
+ "fantastico-sdk",
+ "log",
+ "serde_json",
+ "ureq",
+ "wordcraft-assistant",
 ]
 
 [[package]]

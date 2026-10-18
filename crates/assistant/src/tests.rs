@@ -29,6 +29,8 @@ impl Observer for Log {
             Event::ToolCall { name, .. } => format!("call {name}"),
             Event::ToolResult { name, ok, .. } => format!("result {name} {ok}"),
             Event::Declined { name } => format!("declined {name}"),
+            Event::Stream(crate::Delta::Start) => "stream start".to_string(),
+            Event::Stream(crate::Delta::Text(t)) => format!("stream {t}"),
         });
     }
 }
@@ -90,6 +92,35 @@ fn rewrites_the_selection_with_the_context_it_was_given() {
     let mut p = Scripted::new([text_reply("Hi.")]);
     Agent::new(Config::new("m")).send_with_context(&mut p, &mut b, "hello", Some("  "), &mut ()).unwrap();
     assert_eq!(p.requests[0]["messages"][1]["content"], "hello");
+}
+
+#[test]
+fn a_streaming_endpoint_delivers_the_text_in_pieces_before_the_reply() {
+    let mut b = Headless::default();
+    let mut p = Scripted::streaming([tool_reply(&[("a", "get_text", json!({}))]), text_reply("Hello there, friend.")]);
+    let mut log = Log::default();
+    let turn = Agent::new(Config::new("m")).send(&mut p, &mut b, "hi", &mut log).unwrap();
+    assert_eq!(turn.reply, "Hello there, friend.");
+    // A tool-call step has no text to stream; the final step streams in pieces, then the text.
+    assert_eq!(
+        log.events,
+        [
+            "call get_text",
+            "result get_text true",
+            "stream start",
+            "stream Hell",
+            "stream o th",
+            "stream ere,",
+            "stream  fri",
+            "stream end.",
+            "text Hello there, friend."
+        ]
+    );
+    // An endpoint that can't stream answers whole: the default sends no pieces.
+    let mut p = Scripted::new([text_reply("Whole.")]);
+    let mut log = Log::default();
+    Agent::new(Config::new("m")).send(&mut p, &mut b, "hi", &mut log).unwrap();
+    assert_eq!(log.events, ["text Whole."]);
 }
 
 #[test]

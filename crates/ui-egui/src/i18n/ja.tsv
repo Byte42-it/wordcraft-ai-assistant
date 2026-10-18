@@ -2085,3 +2085,82 @@
 	Leave out the date and time of comments and tracked changes when saving	保存時にコメントと変更履歴の日時を含めない
 	The document you are editing keeps the names and dates; only the saved file leaves them out.	編集中のドキュメントには名前と日時が残ります。保存したファイルにだけ含まれません。
 	Privacy Settings	現在のプライバシー設定
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	こんにちは！GeenioAI です。下書き、書き直し、要約、書式設定を頼んでください。WordCraft のコマンドで文書に反映します。
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	はじめに {service} アカウントを接続してください。アカウントキー（{prefix} で始まります）を貼り付けます。キーはこのコンピューターに保存され、二度と表示されません。
+	Get an account key or top up your credit at {site}	アカウントキーの取得やクレジットのチャージは {site} で
+	GeenioAI is not available in this version yet.	このバージョンでは GeenioAI はまだ利用できません。
+	Connect your account first: paste its account key in the GeenioAI pane.	先にアカウントを接続してください。GeenioAI ウィンドウにアカウントキーを貼り付けます。
+	The assistant is still working on the last request.	アシスタントはまだ前の依頼を処理しています。
+	Running {command}…	{command} を実行中…
+	Running commands…	コマンドを実行中…
+	Writing…	入力中…
+	Selecting text…	テキストを選択中…
+	Reading the document…	文書を読み取り中…
+	Looking up commands…	コマンドを検索中…
+	Starting a new document…	新しい文書を作成中…
+	Opening a document…	文書を開いています…
+	Saving the document…	文書を保存中…
+	Working…	処理中…
+	Checking the key…	キーを確認中…
+	The assistant wants to start a new document: the current one will be closed.	アシスタントが新しい文書を作成しようとしています。現在の文書は閉じられます。
+	The assistant wants to open {path}.	アシスタントが {path} を開こうとしています。
+	The assistant wants to open a document.	アシスタントが文書を開こうとしています。
+	The assistant wants to save the document to {path}.	アシスタントが文書を {path} に保存しようとしています。
+	The assistant wants to save the document.	アシスタントが文書を保存しようとしています。
+	The assistant wants to run {tool}.	アシスタントが {tool} を実行しようとしています。
+	Connected to account {conto}.	アカウント {conto} に接続しました。
+	What shall we write?	何を書きましょうか？
+	The account key was changed: now connected to account {conto}.	アカウントキーを変更しました。アカウント {conto} に接続しています。
+	Declined: {tool}	拒否: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	アシスタントはこのターンのステップを使い切って停止しました。文書には行った内容が残ります。
+	GeenioAI settings	GeenioAI の設定
+	New conversation	新しい会話
+	Refresh credit	クレジットを更新
+	Top up credit	クレジットをチャージ
+	Credit available: {usd} USD	利用可能なクレジット: {usd} USD
+	Allow	許可
+	Decline	拒否
+	Summarize this document	この文書を要約
+	Summarize this document in a few sentences.	この文書を数文で要約してください。
+	Suggest a title	タイトルを提案
+	Suggest three possible titles for this document.	この文書のタイトル案を三つ提案してください。
+	Check the tone	文体を確認
+	Read this document and tell me whether its tone is consistent, and what to improve.	この文書を読んで、文体が一貫しているか、改善点は何かを教えてください。
+	Ask GeenioAI…	GeenioAI に質問…
+	Send	送信
+	Account key	アカウントキー
+	Connect	接続
+	Start a new conversation? The messages so far will be cleared.	新しい会話を始めますか？これまでのメッセージは消去されます。
+	Keep	保持
+	Assistant language	アシスタントの言語
+	Automatic (the language you write in)	自動（入力している言語）
+	The interface language ({language})	インターフェイスの言語（{language}）
+	Suggested by the account ({model})	アカウントの推奨（{model}）
+	Suggested by the account	アカウントの推奨
+	Search models…	モデルを検索…
+	Loading models…	モデルを読み込み中…
+	The models could not be loaded	モデルを読み込めませんでした
+	Account	アカウント
+	Connected account: {conto}	接続中のアカウント: {conto}
+	Reading the account…	アカウントを読み取り中…
+	No account key is set	アカウントキーが設定されていません
+	Change account key	アカウントキーを変更
+	New account key	新しいアカウントキー
+	Change key	キーを変更
+	Draft with GeenioAI	GeenioAI で下書き
+	Connect your account in the GeenioAI pane to start.	GeenioAI ウィンドウでアカウントを接続すると始められます。
+	Open GeenioAI	GeenioAI を開く
+	Describe what you'd like to write	書きたい内容を説明してください
+	Generate	生成
+	Rewrite the selection	選択範囲を書き直す
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	選択したテキストを、意味・言語・書式を保ったまま読みやすく書き直してください。
+	Make it shorter	短くする
+	Make the selected text shorter, keeping its meaning, language and formatting.	選択したテキストを、意味・言語・書式を保ったまま短くしてください。
+	Fix spelling and grammar	スペルと文法を修正
+	Fix the spelling and grammar of the selected text; change nothing else.	選択したテキストのスペルと文法を修正してください。それ以外は変えないでください。
+	Summarize the selection	選択範囲を要約
+	Summarize the selected text in a few sentences, in the chat.	選択したテキストをチャットで数文に要約してください。
+	Rewrite this paragraph	この段落を書き直す
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	カーソルのある段落を、意味・言語・書式を保ったまま読みやすく書き直してください。

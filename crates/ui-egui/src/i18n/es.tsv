@@ -2451,3 +2451,82 @@ preview	Title	Título
 	Leave out the date and time of comments and tracked changes when saving	Omitir la fecha y la hora de los comentarios y los cambios controlados al guardar
 	The document you are editing keeps the names and dates; only the saved file leaves them out.	El documento que editas conserva los nombres y las fechas; solo el archivo guardado los omite.
 	Privacy Settings	Configuración de privacidad actual
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	¡Hola! Soy GeenioAI. Pídeme redactar, reescribir, resumir o dar formato, y lo haré en el documento con los comandos de WordCraft.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Para empezar, conecta tu cuenta de {service}: pega su clave de cuenta (empieza por {prefix}). La clave se queda en este equipo y no se vuelve a mostrar.
+	Get an account key or top up your credit at {site}	Obtén una clave de cuenta o recarga tu crédito en {site}
+	GeenioAI is not available in this version yet.	GeenioAI aún no está disponible en esta versión.
+	Connect your account first: paste its account key in the GeenioAI pane.	Conecta primero tu cuenta: pega su clave de cuenta en el panel de GeenioAI.
+	The assistant is still working on the last request.	El asistente todavía está trabajando en la última petición.
+	Running {command}…	Ejecutando {command}…
+	Running commands…	Ejecutando comandos…
+	Writing…	Escribiendo…
+	Selecting text…	Seleccionando texto…
+	Reading the document…	Leyendo el documento…
+	Looking up commands…	Buscando comandos…
+	Starting a new document…	Creando un documento nuevo…
+	Opening a document…	Abriendo un documento…
+	Saving the document…	Guardando el documento…
+	Working…	Trabajando…
+	Checking the key…	Comprobando la clave…
+	The assistant wants to start a new document: the current one will be closed.	El asistente quiere crear un documento nuevo: el actual se cerrará.
+	The assistant wants to open {path}.	El asistente quiere abrir {path}.
+	The assistant wants to open a document.	El asistente quiere abrir un documento.
+	The assistant wants to save the document to {path}.	El asistente quiere guardar el documento en {path}.
+	The assistant wants to save the document.	El asistente quiere guardar el documento.
+	The assistant wants to run {tool}.	El asistente quiere ejecutar {tool}.
+	Connected to account {conto}.	Conectado a la cuenta {conto}.
+	What shall we write?	¿Qué escribimos?
+	The account key was changed: now connected to account {conto}.	La clave de cuenta ha cambiado: ahora estás conectado a la cuenta {conto}.
+	Declined: {tool}	Rechazado: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	El asistente agotó los pasos de este turno y se detuvo; el documento conserva lo que hizo.
+	GeenioAI settings	Configuración de GeenioAI
+	New conversation	Nueva conversación
+	Refresh credit	Actualizar crédito
+	Top up credit	Recargar crédito
+	Credit available: {usd} USD	Crédito disponible: {usd} USD
+	Allow	Permitir
+	Decline	Rechazar
+	Summarize this document	Resumir este documento
+	Summarize this document in a few sentences.	Resume este documento en pocas frases.
+	Suggest a title	Sugerir un título
+	Suggest three possible titles for this document.	Sugiere tres posibles títulos para este documento.
+	Check the tone	Revisar el tono
+	Read this document and tell me whether its tone is consistent, and what to improve.	Lee este documento y dime si su tono es coherente y qué se puede mejorar.
+	Ask GeenioAI…	Pregunta a GeenioAI…
+	Send	Enviar
+	Account key	Clave de cuenta
+	Connect	Conectar
+	Start a new conversation? The messages so far will be cleared.	¿Empezar una conversación nueva? Los mensajes anteriores se borrarán.
+	Keep	Mantener
+	Assistant language	Idioma del asistente
+	Automatic (the language you write in)	Automático (el idioma en el que escribes)
+	The interface language ({language})	El idioma de la interfaz ({language})
+	Suggested by the account ({model})	Sugerido por la cuenta ({model})
+	Suggested by the account	Sugerido por la cuenta
+	Search models…	Buscar modelos…
+	Loading models…	Cargando modelos…
+	The models could not be loaded	No se pudieron cargar los modelos
+	Account	Cuenta
+	Connected account: {conto}	Cuenta conectada: {conto}
+	Reading the account…	Leyendo la cuenta…
+	No account key is set	No hay ninguna clave de cuenta
+	Change account key	Cambiar clave de cuenta
+	New account key	Nueva clave de cuenta
+	Change key	Cambiar clave
+	Draft with GeenioAI	Redactar con GeenioAI
+	Connect your account in the GeenioAI pane to start.	Conecta tu cuenta en el panel de GeenioAI para empezar.
+	Open GeenioAI	Abrir GeenioAI
+	Describe what you'd like to write	Describe lo que quieres escribir
+	Generate	Generar
+	Rewrite the selection	Reescribir la selección
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Reescribe el texto seleccionado para que se lea mejor, manteniendo su significado, su idioma y su formato.
+	Make it shorter	Acortar
+	Make the selected text shorter, keeping its meaning, language and formatting.	Acorta el texto seleccionado manteniendo su significado, su idioma y su formato.
+	Fix spelling and grammar	Corregir ortografía y gramática
+	Fix the spelling and grammar of the selected text; change nothing else.	Corrige la ortografía y la gramática del texto seleccionado; no cambies nada más.
+	Summarize the selection	Resumir la selección
+	Summarize the selected text in a few sentences, in the chat.	Resume el texto seleccionado en pocas frases, en el chat.
+	Rewrite this paragraph	Reescribir este párrafo
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Reescribe el párrafo en el que está el cursor para que se lea mejor, manteniendo su significado, su idioma y su formato.

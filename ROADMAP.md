@@ -135,6 +135,7 @@ Ranked, to beta (detail and remaining milestones in [docs/roadmap.md](docs/roadm
 
 | Date | What landed |
 |---|---|
+| 2026-10-18 | GeenioAI streams its replies (the text shows as it arrives, in the pane and from `wordcraft-cli ask`), through a new native crate `wordcraft-fantastico` that reads the provider's event stream under the FANTASTICO SDK; its interface strings are now in all 18 languages |
 | 2026-10-18 | GeenioAI, the AI assistant (#25, [docs/assistant.md](docs/assistant.md)): Home › GeenioAI opens a chat pane like Word's Copilot pane, and an icon in the left margin beside the caret's paragraph (like Word's Copilot icon) offers a Draft box on an empty paragraph and Rewrite, Make it shorter, Fix spelling and grammar and Summarize on a selection. The agent (new L5 crate `wordcraft-assistant`) edits the document with WordCraft's own commands through the MCP tools; one request is one undo step. The model is any the user's FANTASTICO account offers (Claude, GPT, Gemini, Llama…), chosen in the pane's settings with the reply language; the account key is checked before it is stored and never shown. `ui.assistant`, `ui.assistant.ask` and `wordcraft-cli ask` for agents |
 | 2026-10-12 | Text boxes from older Word files (VML) keep their internal margins, Resize shape to fit text and vertical alignment, so letterhead address blocks and form headers sit where Word puts them instead of 7 pt in and 4 pt down. Hidden drawings stay hidden (they were drawn as empty boxes) and are kept on save |
 | 2026-10-13 | Word's privacy options are kept and honoured when saving .docx (#1062): with Remove personal information, comments and tracked changes are saved by "Author" and the file has no creator or last-modified-by; with Remove date and time, they are saved without dates. The open document keeps the real names and dates; `file.privacyOptions` sets both |
@@ -288,6 +289,7 @@ Ranked, to beta (detail and remaining milestones in [docs/roadmap.md](docs/roadm
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-18 | trivial | Progress log: GeenioAI streaming replies and translations |
 | 2026-10-18 | minor | GeenioAI (the AI assistant) landed (#25): pane, margin icon, FANTASTICO host, `wordcraft-cli ask`; AI features 40% → 70% |
 | 2026-10-12 | trivial | Progress log: VML text box margins, fit and alignment; hidden drawings |
 | 2026-10-13 | trivial | Progress log: comment balloon buttons work, empty comments can be deleted (#1085) |

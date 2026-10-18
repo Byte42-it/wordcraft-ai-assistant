@@ -17,7 +17,7 @@ use std::time::Duration;
 
 use egui::{Rect, RichText, Sense, vec2};
 use serde_json::{Value, json};
-use wordcraft_assistant::{Agent, Config, Event, Observer, Provider};
+use wordcraft_assistant::{Agent, Config, Delta, Event, Observer, Provider};
 use wordcraft_mcp::Backend;
 
 use crate::WordApp;
@@ -210,6 +210,10 @@ enum Update {
     Balance(Option<f64>),
     Models(Result<Vec<ModelInfo>, String>),
     Text(String),
+    /// A reply starts streaming (text shown for an earlier attempt is stale).
+    StreamStart,
+    /// The next piece of the streaming reply.
+    StreamText(String),
     /// The agent asked for a tool.
     Step {
         name: String,
@@ -260,6 +264,9 @@ pub struct Assistant {
     pub(crate) busy: bool,
     /// The current action while `busy`, for the status line under the messages.
     activity: Option<Activity>,
+    /// The reply streaming in, shown as a bubble that fills up; replaced by the whole text when
+    /// the step ends.
+    pub(crate) streaming: Option<String>,
     conversation: Option<Conversation>,
     /// A question to the user (what the assistant wants to do) and where its answer goes.
     pub(crate) confirm: Option<(String, Sender<bool>)>,
@@ -301,6 +308,7 @@ impl Default for Assistant {
             key_input: String::new(),
             busy: false,
             activity: None,
+            streaming: None,
             conversation: None,
             confirm: None,
             account: None,
@@ -515,6 +523,8 @@ impl Observer for UiObserver {
             }
             Event::ToolResult { .. } => return,
             Event::Declined { name } => Update::Declined { name: name.to_string() },
+            Event::Stream(Delta::Start) => Update::StreamStart,
+            Event::Stream(Delta::Text(t)) => Update::StreamText(t.to_string()),
         };
         self.send(u);
     }
@@ -589,6 +599,7 @@ pub(crate) fn ask(app: &mut WordApp, ctx: &egui::Context, prompt: &str, draft: b
     a.push(Role::User, prompt.clone());
     a.busy = true;
     a.activity = None;
+    a.streaming = None;
     let conversation = a.conversation.take();
     let instructions = a.language.instruction();
     let chosen = a.model.clone();
@@ -805,7 +816,12 @@ fn update(a: &mut Assistant, u: Update, registry: &wordcraft_engine::Registry) -
                 a.balance = Some(b);
             }
         }
-        Update::Text(t) => a.push(Role::Assistant, t),
+        Update::Text(t) => {
+            a.streaming = None;
+            a.push(Role::Assistant, t)
+        }
+        Update::StreamStart => a.streaming = Some(String::new()),
+        Update::StreamText(t) => a.streaming.get_or_insert_with(String::new).push_str(&t),
         Update::Step { name, args } => {
             a.activity = Some(Activity { text: describe(registry, &name, &args), failed: false });
         }
@@ -824,6 +840,7 @@ fn update(a: &mut Assistant, u: Update, registry: &wordcraft_engine::Registry) -
         Update::Done { conversation, error, balance, stopped } => {
             a.busy = false;
             a.activity = None;
+            a.streaming = None;
             a.conversation = conversation;
             // The language may have changed while the turn ran.
             let language = a.language;
@@ -943,6 +960,10 @@ pub fn show(app: &mut WordApp, ui: &mut egui::Ui) {
                 ui.set_width(ui.available_width());
                 for m in &app.assistant.messages {
                     bubble(ui, m, &t, &service.url);
+                }
+                // The reply streaming in, as a bubble that fills up.
+                if let Some(text) = app.assistant.streaming.as_ref().filter(|s| !s.is_empty()) {
+                    bubble(ui, &Message { role: Role::Assistant, text: text.clone() }, &t, &service.url);
                 }
             });
             // One status line: the spinner and the current action, replaced by the next one and

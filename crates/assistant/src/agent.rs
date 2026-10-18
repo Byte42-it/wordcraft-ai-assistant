@@ -7,7 +7,7 @@ use serde_json::{Map, Value, json};
 use wordcraft_mcp::Backend;
 use wordcraft_mcp::tools::{call_tool, tool_definitions};
 
-use crate::provider::Provider;
+use crate::provider::{Delta, Provider};
 
 /// The most tool-calling model calls one turn may make (the default and the cap of
 /// [`Config::max_steps`]). Past it the model gets one last call, without tools, to say what it
@@ -98,10 +98,13 @@ pub enum Event<'a> {
     ToolResult { name: &'a str, ok: bool, text: &'a str },
     /// The user declined a tool that needed confirmation.
     Declined { name: &'a str },
+    /// A piece of the model's text as it streams in; the whole text follows as [`Event::Text`].
+    Stream(Delta<'a>),
 }
 
-/// The user's side of a turn: confirmations and progress.
-pub trait Observer {
+/// The user's side of a turn: confirmations and progress. `Send`, so a streaming endpoint can
+/// hand it the pieces of a reply from the thread that reads them.
+pub trait Observer: Send {
     /// Whether the tool `name` (one that replaces the document or writes a file) may run.
     /// Declined unless the host says otherwise.
     fn confirm(&mut self, name: &str, arguments: &Value) -> bool {
@@ -261,7 +264,7 @@ impl Agent {
         let mut tool_calls = 0;
         for step in 1..=max_steps {
             let request = json!({"model": self.config.model, "messages": self.messages, "tools": tools});
-            let response = provider.complete(&request).map_err(Error::Provider)?;
+            let response = provider.complete_streaming(&request, &mut |d| observer.event(Event::Stream(d))).map_err(Error::Provider)?;
             let (text, calls) = parse_reply(&response)?;
             if let Some(t) = text.as_deref().filter(|t| !t.trim().is_empty()) {
                 observer.event(Event::Text(t));
@@ -281,7 +284,7 @@ impl Agent {
         let mut messages = self.messages.clone();
         messages.push(json!({"role": "user", "content": WRAP_UP}));
         let request = json!({"model": self.config.model, "messages": messages});
-        let response = provider.complete(&request).map_err(Error::Provider)?;
+        let response = provider.complete_streaming(&request, &mut |d| observer.event(Event::Stream(d))).map_err(Error::Provider)?;
         let (text, calls) = parse_reply(&response)?;
         match text.filter(|t| !t.trim().is_empty()) {
             Some(reply) if calls.is_empty() => {

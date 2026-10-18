@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 
 use fantastico_sdk::{Fantastico, Options, Surface};
 use serde_json::Value;
+use wordcraft_fantastico::Streaming;
 use wordcraft_ui_egui::assistant::{Account, AssistantEvent, AssistantHost, ModelInfo, Service};
 
 /// The largest key file read back (a key is under a hundred bytes).
@@ -123,21 +124,6 @@ impl FantasticoHost {
     }
 }
 
-/// A FANTASTICO account as the assistant's model endpoint.
-struct FantasticoProvider(Fantastico);
-
-impl wordcraft_assistant::Provider for FantasticoProvider {
-    fn complete(&mut self, request: &Value) -> Result<Value, String> {
-        self.0.chat_completion(request).map_err(|e| match e.code.as_str() {
-            "ALLOWANCE_EXHAUSTED" | "INSUFFICIENT_RESERVE" | "INSUFFICIENT_FUNDS" => {
-                "The credit on your FANTASTICO account has run out: top it up to continue".to_string()
-            }
-            "NETWORK_ERROR" => "FANTASTICO cannot be reached: check the internet connection".to_string(),
-            _ => format!("{} ({})", e.message, e.code),
-        })
-    }
-}
-
 impl AssistantHost for FantasticoHost {
     fn service(&self) -> Service {
         Service { name: "FANTASTICO".into(), url: SITE.into(), key_prefix: "ck-fant-".into() }
@@ -185,13 +171,15 @@ impl AssistantHost for FantasticoHost {
         Some(Self::account_of(config))
     }
 
+    /// The conversation's endpoint streams its replies (`wordcraft-fantastico`).
     fn provider(&self) -> Result<(Box<dyn wordcraft_assistant::Provider + Send>, String), String> {
-        let client = self.client()?;
+        let provider = Streaming::new(self.store.load()?, Self::options()).map_err(|e| e.message)?;
+        let client = provider.client();
         let model = match client.surface() {
             Surface::Edge => client.config().map(|c| c.model).unwrap_or_else(|_| fantastico_sdk::DEFAULT_MODEL.to_string()),
             Surface::Runtime => fantastico_sdk::DEFAULT_MODEL.to_string(),
         };
-        Ok((Box::new(FantasticoProvider(client)), model))
+        Ok((Box::new(provider), model))
     }
 
     fn balance(&self) -> Option<f64> {

@@ -424,11 +424,11 @@ fn run(args: &[String]) -> Result<(), Failure> {
                 referer: "https://github.com/storytold/wordcraft".into(),
                 ..fantastico_sdk::Options::default()
             };
-            let client = fantastico_sdk::Fantastico::new(key, opts).map_err(|e| e.message)?;
+            let mut provider = wordcraft_fantastico::Streaming::new(key, opts).map_err(|e| e.message)?;
             // The account suggests a model; a project key has none to ask for.
-            let model = match (&a.model, client.surface()) {
+            let model = match (&a.model, provider.client().surface()) {
                 (Some(m), _) => m.clone(),
-                (None, fantastico_sdk::Surface::Edge) => client.config().map_err(|e| e.message)?.model,
+                (None, fantastico_sdk::Surface::Edge) => provider.client().config().map_err(|e| e.message)?.model,
                 (None, fantastico_sdk::Surface::Runtime) => fantastico_sdk::DEFAULT_MODEL.to_string(),
             };
             let mut s = match (&a.file, &a.template) {
@@ -445,15 +445,21 @@ fn run(args: &[String]) -> Result<(), Failure> {
             }
             let mut backend = wordcraft_mcp::Headless::default();
             backend.session = s;
-            let mut provider = FantasticoProvider(client);
             let mut config = wordcraft_assistant::Config::new(model);
             if let Some(n) = a.max_steps {
                 config.max_steps = n;
             }
-            let turn = wordcraft_assistant::Agent::new(config).send(&mut provider, &mut backend, &a.prompt, &mut AskObserver { yes: a.yes });
+            let mut observer = AskObserver { yes: a.yes, printed: String::new() };
+            let turn = wordcraft_assistant::Agent::new(config).send(&mut provider, &mut backend, &a.prompt, &mut observer);
             if let Ok(t) = &turn {
+                // Streamed text is on stdout already; what wasn't streamed (or differs) follows.
                 let reply = t.reply.trim().to_string();
-                write_stdout(|o| writeln!(o, "{reply}"))?;
+                if observer.printed.trim() == reply {
+                    write_stdout(|o| writeln!(o))?;
+                } else {
+                    let gap = if observer.printed.is_empty() { "" } else { "\n" };
+                    write_stdout(|o| writeln!(o, "{gap}{reply}"))?;
+                }
             }
             // Write what was done even when the turn stopped early: the file was asked for.
             if let Some(p) = &a.save {
@@ -532,18 +538,11 @@ fn parse_ask_args(rest: &[String]) -> Result<AskArgs, String> {
     Ok(a)
 }
 
-/// The assistant's model endpoint for `ask`: a FANTASTICO account.
-struct FantasticoProvider(fantastico_sdk::Fantastico);
-
-impl wordcraft_assistant::Provider for FantasticoProvider {
-    fn complete(&mut self, request: &Value) -> Result<Value, String> {
-        self.0.chat_completion(request).map_err(|e| format!("{} ({})", e.message, e.code))
-    }
-}
-
-/// `ask` on a terminal: progress on stderr, confirmations asked on stdin.
+/// `ask` on a terminal: progress on stderr, confirmations asked on stdin, the reply streamed to
+/// stdout as it arrives (`printed` is what went out, so the end doesn't repeat it).
 struct AskObserver {
     yes: bool,
+    printed: String,
 }
 
 impl wordcraft_assistant::Observer for AskObserver {
@@ -566,7 +565,17 @@ impl wordcraft_assistant::Observer for AskObserver {
             Event::ToolCall { name, arguments } => eprintln!("-> {name} {}", clip(&arguments.to_string())),
             Event::ToolResult { ok: false, text, .. } => eprintln!("   error: {}", clip(text)),
             Event::Declined { name } => eprintln!("   declined `{name}`"),
-            // The reply goes to stdout at the end.
+            // The pieces go to stdout as they come; the whole text at the end only if it differs.
+            Event::Stream(wordcraft_assistant::Delta::Start) => {
+                if !self.printed.is_empty() {
+                    let _ = write_stdout(|o| writeln!(o));
+                }
+                self.printed.clear();
+            }
+            Event::Stream(wordcraft_assistant::Delta::Text(t)) => {
+                self.printed.push_str(t);
+                let _ = write_stdout(|o| write!(o, "{t}"));
+            }
             Event::Text(_) | Event::ToolResult { .. } => {}
         }
     }

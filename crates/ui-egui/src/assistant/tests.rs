@@ -12,13 +12,15 @@ use crate::Services;
 
 struct FakeHost {
     key: AtomicBool,
+    /// Replies stream in pieces.
+    stream: AtomicBool,
     replies: Mutex<Vec<Value>>,
     events: Mutex<Vec<AssistantEvent>>,
 }
 
 impl FakeHost {
     fn new(replies: Vec<Value>) -> Arc<Self> {
-        Arc::new(Self { key: AtomicBool::new(false), replies: Mutex::new(replies), events: Mutex::default() })
+        Arc::new(Self { key: AtomicBool::new(false), stream: AtomicBool::new(false), replies: Mutex::new(replies), events: Mutex::default() })
     }
     fn with_key(replies: Vec<Value>) -> Arc<Self> {
         let h = Self::new(replies);
@@ -60,7 +62,8 @@ impl AssistantHost for FakeHost {
     }
     fn provider(&self) -> Result<(Box<dyn Provider + Send>, String), String> {
         let replies = std::mem::take(&mut *self.replies.lock().unwrap());
-        Ok((Box::new(Scripted::new(replies)), "m".into()))
+        let scripted = if self.stream.load(Ordering::SeqCst) { Scripted::streaming(replies) } else { Scripted::new(replies) };
+        Ok((Box::new(scripted), "m".into()))
     }
     fn balance(&self) -> Option<f64> {
         Some(0.03)
@@ -197,6 +200,37 @@ fn the_draft_box_asks_for_text_in_the_document() {
     // An empty one too.
     assert!(ask(&mut app, &ctx, "   ", false).is_err());
     assert!(app.run("ui.assistant.ask", json!({})).is_err());
+}
+
+#[test]
+fn a_streaming_reply_fills_a_bubble_and_becomes_the_message() {
+    let mut a = Assistant::default();
+    let reg = wordcraft_engine::cmd::registry();
+    a.busy = true;
+    update(&mut a, Update::StreamStart, &reg);
+    update(&mut a, Update::StreamText("Hel".into()), &reg);
+    update(&mut a, Update::StreamText("lo".into()), &reg);
+    assert_eq!(a.streaming.as_deref(), Some("Hello"));
+    assert!(a.messages.is_empty());
+    // A retry starts the bubble over.
+    update(&mut a, Update::StreamStart, &reg);
+    assert_eq!(a.streaming.as_deref(), Some(""));
+    update(&mut a, Update::StreamText("Hello again".into()), &reg);
+    // The whole text replaces the bubble.
+    update(&mut a, Update::Text("Hello again".into()), &reg);
+    assert!(a.streaming.is_none());
+    assert_eq!(a.messages.len(), 1);
+    assert_eq!(a.messages[0].text, "Hello again");
+    // End to end with a streaming endpoint: the pieces reach the pane and the message is whole.
+    let host = FakeHost::with_key(vec![text_reply("Streamed reply.")]);
+    host.stream.store(true, Ordering::SeqCst);
+    let mut app = app_with(host);
+    let ctx = egui::Context::default();
+    app.assistant.input = "ciao".into();
+    send(&mut app, &ctx);
+    pump(&mut app, &ctx);
+    assert!(app.assistant.streaming.is_none());
+    assert!(app.assistant.messages.iter().any(|m| m.role == Role::Assistant && m.text == "Streamed reply."));
 }
 
 #[test]

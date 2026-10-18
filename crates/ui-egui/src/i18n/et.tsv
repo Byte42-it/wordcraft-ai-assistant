@@ -2119,3 +2119,82 @@
 	Leave out the date and time of comments and tracked changes when saving	Jäta salvestamisel välja kommentaaride ja jälitatud muudatuste kuupäev ja kellaaeg
 	The document you are editing keeps the names and dates; only the saved file leaves them out.	Redigeeritav dokument säilitab nimed ja kuupäevad; need jäetakse välja ainult salvestatud failist.
 	Privacy Settings	Praegused privaatsussätted
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Tere! Mina olen GeenioAI. Palu mul mustandit kirjutada, ümber sõnastada, kokku võtta või vormindada ja ma teen seda dokumendis WordCrafti käskudega.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Alustuseks ühenda oma {service} konto: kleebi selle kontovõti (algab tähtedega {prefix}). Võti jääb sellesse arvutisse ja seda ei näidata enam kunagi.
+	Get an account key or top up your credit at {site}	Kontovõtme saad ja krediiti laed aadressil {site}
+	GeenioAI is not available in this version yet.	GeenioAI pole selles versioonis veel saadaval.
+	Connect your account first: paste its account key in the GeenioAI pane.	Ühenda kõigepealt oma konto: kleebi kontovõti GeenioAI paanile.
+	The assistant is still working on the last request.	Assistent tegeleb veel viimase palvega.
+	Running {command}…	Käivitan: {command}…
+	Running commands…	Käivitan käske…
+	Writing…	Kirjutan…
+	Selecting text…	Valin teksti…
+	Reading the document…	Loen dokumenti…
+	Looking up commands…	Otsin käske…
+	Starting a new document…	Loon uut dokumenti…
+	Opening a document…	Avan dokumenti…
+	Saving the document…	Salvestan dokumenti…
+	Working…	Töötan…
+	Checking the key…	Kontrollin võtit…
+	The assistant wants to start a new document: the current one will be closed.	Assistent tahab luua uue dokumendi: praegune suletakse.
+	The assistant wants to open {path}.	Assistent tahab avada faili {path}.
+	The assistant wants to open a document.	Assistent tahab avada dokumendi.
+	The assistant wants to save the document to {path}.	Assistent tahab salvestada dokumendi asukohta {path}.
+	The assistant wants to save the document.	Assistent tahab dokumendi salvestada.
+	The assistant wants to run {tool}.	Assistent tahab käivitada tööriista {tool}.
+	Connected to account {conto}.	Ühendatud kontoga {conto}.
+	What shall we write?	Mida kirjutame?
+	The account key was changed: now connected to account {conto}.	Kontovõti on muudetud: nüüd oled ühendatud kontoga {conto}.
+	Declined: {tool}	Keelatud: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	Assistendil said selle vooru sammud otsa ja ta peatus; dokument jääb sellisena, nagu ta selle jättis.
+	GeenioAI settings	GeenioAI seaded
+	New conversation	Uus vestlus
+	Refresh credit	Värskenda krediiti
+	Top up credit	Lae krediiti
+	Credit available: {usd} USD	Saadaolev krediit: {usd} USD
+	Allow	Luba
+	Decline	Keela
+	Summarize this document	Võta see dokument kokku
+	Summarize this document in a few sentences.	Võta see dokument mõne lausega kokku.
+	Suggest a title	Paku pealkiri
+	Suggest three possible titles for this document.	Paku sellele dokumendile kolm võimalikku pealkirja.
+	Check the tone	Kontrolli tooni
+	Read this document and tell me whether its tone is consistent, and what to improve.	Loe see dokument läbi ja ütle, kas toon on ühtlane ja mida parandada.
+	Ask GeenioAI…	Küsi GeenioAI-lt…
+	Send	Saada
+	Account key	Kontovõti
+	Connect	Ühenda
+	Start a new conversation? The messages so far will be cleared.	Kas alustada uut vestlust? Senised sõnumid kustutatakse.
+	Keep	Jäta alles
+	Assistant language	Assistendi keel
+	Automatic (the language you write in)	Automaatne (keel, milles kirjutad)
+	The interface language ({language})	Liidese keel ({language})
+	Suggested by the account ({model})	Konto soovitus ({model})
+	Suggested by the account	Konto soovitus
+	Search models…	Otsi mudeleid…
+	Loading models…	Laen mudeleid…
+	The models could not be loaded	Mudeleid ei õnnestunud laadida
+	Account	Konto
+	Connected account: {conto}	Ühendatud konto: {conto}
+	Reading the account…	Loen kontot…
+	No account key is set	Kontovõtit pole määratud
+	Change account key	Muuda kontovõtit
+	New account key	Uus kontovõti
+	Change key	Muuda võtit
+	Draft with GeenioAI	Mustand GeenioAI-ga
+	Connect your account in the GeenioAI pane to start.	Alustamiseks ühenda oma konto GeenioAI paanil.
+	Open GeenioAI	Ava GeenioAI
+	Describe what you'd like to write	Kirjelda, mida soovid kirjutada
+	Generate	Loo
+	Rewrite the selection	Sõnasta valik ümber
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Sõnasta valitud tekst ümber, et see oleks paremini loetav; säilita tähendus, keel ja vormindus.
+	Make it shorter	Lühenda
+	Make the selected text shorter, keeping its meaning, language and formatting.	Lühenda valitud teksti; säilita tähendus, keel ja vormindus.
+	Fix spelling and grammar	Paranda õigekiri ja grammatika
+	Fix the spelling and grammar of the selected text; change nothing else.	Paranda valitud teksti õigekiri ja grammatika; muud ära muuda.
+	Summarize the selection	Võta valik kokku
+	Summarize the selected text in a few sentences, in the chat.	Võta valitud tekst mõne lausega kokku, vestluses.
+	Rewrite this paragraph	Sõnasta see lõik ümber
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Sõnasta kursori lõik ümber, et see oleks paremini loetav; säilita tähendus, keel ja vormindus.

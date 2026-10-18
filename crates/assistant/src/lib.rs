@@ -14,7 +14,7 @@ mod agent;
 mod provider;
 
 pub use agent::{Agent, Config, Error, Event, MAX_STEPS, Observer, Turn};
-pub use provider::{Provider, Scripted, text_reply, tool_reply};
+pub use provider::{Delta, Provider, Scripted, text_reply, tool_reply};
 
 #[cfg(test)]
 mod tests;

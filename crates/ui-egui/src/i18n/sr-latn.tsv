@@ -2095,3 +2095,82 @@
 	Leave out the date and time of comments and tracked changes when saving	Izostavi datum i vreme komentara i praćenih izmena pri čuvanju
 	The document you are editing keeps the names and dates; only the saved file leaves them out.	Dokument koji uređujete zadržava imena i datume; izostavlja ih samo sačuvana datoteka.
 	Privacy Settings	Trenutna podešavanja privatnosti
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Zdravo! Ja sam GeenioAI. Zatraži da napišem nacrt, prepravim, sažmem ili formatiram tekst i uradiću to u dokumentu komandama WordCraft-a.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Za početak poveži svoj {service} nalog: nalepi njegov ključ naloga (počinje sa {prefix}). Ključ ostaje na ovom računaru i nikada se više ne prikazuje.
+	Get an account key or top up your credit at {site}	Ključ naloga nabavi ili kredit dopuni na {site}
+	GeenioAI is not available in this version yet.	GeenioAI još nije dostupan u ovoj verziji.
+	Connect your account first: paste its account key in the GeenioAI pane.	Prvo poveži svoj nalog: nalepi ključ naloga u okno GeenioAI.
+	The assistant is still working on the last request.	Asistent još radi na poslednjem zahtevu.
+	Running {command}…	Izvršava se {command}…
+	Running commands…	Izvršavaju se komande…
+	Writing…	Pišem…
+	Selecting text…	Biram tekst…
+	Reading the document…	Čitam dokument…
+	Looking up commands…	Tražim komande…
+	Starting a new document…	Pravim novi dokument…
+	Opening a document…	Otvaram dokument…
+	Saving the document…	Čuvam dokument…
+	Working…	Radim…
+	Checking the key…	Proveravam ključ…
+	The assistant wants to start a new document: the current one will be closed.	Asistent želi da napravi novi dokument: trenutni će biti zatvoren.
+	The assistant wants to open {path}.	Asistent želi da otvori {path}.
+	The assistant wants to open a document.	Asistent želi da otvori dokument.
+	The assistant wants to save the document to {path}.	Asistent želi da sačuva dokument u {path}.
+	The assistant wants to save the document.	Asistent želi da sačuva dokument.
+	The assistant wants to run {tool}.	Asistent želi da pokrene {tool}.
+	Connected to account {conto}.	Povezano sa nalogom {conto}.
+	What shall we write?	Šta pišemo?
+	The account key was changed: now connected to account {conto}.	Ključ naloga je promenjen: sada je povezan nalog {conto}.
+	Declined: {tool}	Odbijeno: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	Asistentu su istekli koraci za ovaj potez i zaustavio se; dokument zadržava što je uradio.
+	GeenioAI settings	Podešavanja GeenioAI
+	New conversation	Novi razgovor
+	Refresh credit	Osveži kredit
+	Top up credit	Dopuni kredit
+	Credit available: {usd} USD	Dostupan kredit: {usd} USD
+	Allow	Dozvoli
+	Decline	Odbij
+	Summarize this document	Sažmi ovaj dokument
+	Summarize this document in a few sentences.	Sažmi ovaj dokument u nekoliko rečenica.
+	Suggest a title	Predloži naslov
+	Suggest three possible titles for this document.	Predloži tri moguća naslova za ovaj dokument.
+	Check the tone	Proveri ton
+	Read this document and tell me whether its tone is consistent, and what to improve.	Pročitaj ovaj dokument i reci mi da li je ton dosledan i šta poboljšati.
+	Ask GeenioAI…	Pitaj GeenioAI…
+	Send	Pošalji
+	Account key	Ključ naloga
+	Connect	Poveži
+	Start a new conversation? The messages so far will be cleared.	Započeti novi razgovor? Dosadašnje poruke biće obrisane.
+	Keep	Zadrži
+	Assistant language	Jezik asistenta
+	Automatic (the language you write in)	Automatski (jezik na kojem pišeš)
+	The interface language ({language})	Jezik interfejsa ({language})
+	Suggested by the account ({model})	Predlog naloga ({model})
+	Suggested by the account	Predlog naloga
+	Search models…	Pretraži modele…
+	Loading models…	Učitavam modele…
+	The models could not be loaded	Modeli nisu mogli da se učitaju
+	Account	Nalog
+	Connected account: {conto}	Povezani nalog: {conto}
+	Reading the account…	Čitam nalog…
+	No account key is set	Ključ naloga nije podešen
+	Change account key	Promeni ključ naloga
+	New account key	Novi ključ naloga
+	Change key	Promeni ključ
+	Draft with GeenioAI	Nacrt sa GeenioAI
+	Connect your account in the GeenioAI pane to start.	Za početak poveži svoj nalog u oknu GeenioAI.
+	Open GeenioAI	Otvori GeenioAI
+	Describe what you'd like to write	Opiši šta želiš da napišeš
+	Generate	Generiši
+	Rewrite the selection	Prepravi izbor
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Prepravi izabrani tekst tako da se bolje čita, zadržavajući značenje, jezik i formatiranje.
+	Make it shorter	Skrati
+	Make the selected text shorter, keeping its meaning, language and formatting.	Skrati izabrani tekst, zadržavajući značenje, jezik i formatiranje.
+	Fix spelling and grammar	Ispravi pravopis i gramatiku
+	Fix the spelling and grammar of the selected text; change nothing else.	Ispravi pravopis i gramatiku izabranog teksta; ništa drugo ne menjaj.
+	Summarize the selection	Sažmi izbor
+	Summarize the selected text in a few sentences, in the chat.	Sažmi izabrani tekst u nekoliko rečenica, u ćaskanju.
+	Rewrite this paragraph	Prepravi ovaj pasus
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Prepravi pasus u kojem je kursor tako da se bolje čita, zadržavajući značenje, jezik i formatiranje.

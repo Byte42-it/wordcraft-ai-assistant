@@ -2097,3 +2097,82 @@
 	Leave out the date and time of comments and tracked changes when saving	Не зберігати дату й час приміток і відстежуваних змін
 	The document you are editing keeps the names and dates; only the saved file leaves them out.	Документ, який ви редагуєте, зберігає імена й дати; їх не буде лише у збереженому файлі.
 	Privacy Settings	Поточні налаштування конфіденційності
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Привіт! Я GeenioAI. Попросіть мене написати чернетку, переписати, стисло викласти або відформатувати текст, і я зроблю це в документі командами WordCraft.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Для початку під'єднайте свій обліковий запис {service}: вставте його ключ (він починається з {prefix}). Ключ залишається на цьому комп'ютері й більше ніколи не показується.
+	Get an account key or top up your credit at {site}	Отримати ключ облікового запису або поповнити баланс можна на {site}
+	GeenioAI is not available in this version yet.	GeenioAI у цій версії поки недоступний.
+	Connect your account first: paste its account key in the GeenioAI pane.	Спочатку під'єднайте обліковий запис: вставте його ключ у панелі GeenioAI.
+	The assistant is still working on the last request.	Асистент ще працює над останнім запитом.
+	Running {command}…	Виконується {command}…
+	Running commands…	Виконуються команди…
+	Writing…	Пишу…
+	Selecting text…	Виділяю текст…
+	Reading the document…	Читаю документ…
+	Looking up commands…	Шукаю команди…
+	Starting a new document…	Створюю новий документ…
+	Opening a document…	Відкриваю документ…
+	Saving the document…	Зберігаю документ…
+	Working…	Працюю…
+	Checking the key…	Перевіряю ключ…
+	The assistant wants to start a new document: the current one will be closed.	Асистент хоче створити новий документ: поточний буде закрито.
+	The assistant wants to open {path}.	Асистент хоче відкрити {path}.
+	The assistant wants to open a document.	Асистент хоче відкрити документ.
+	The assistant wants to save the document to {path}.	Асистент хоче зберегти документ у {path}.
+	The assistant wants to save the document.	Асистент хоче зберегти документ.
+	The assistant wants to run {tool}.	Асистент хоче виконати {tool}.
+	Connected to account {conto}.	Під'єднано до облікового запису {conto}.
+	What shall we write?	Що напишемо?
+	The account key was changed: now connected to account {conto}.	Ключ облікового запису змінено: тепер під'єднано обліковий запис {conto}.
+	Declined: {tool}	Відхилено: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	В асистента скінчилися кроки на цей хід, і він зупинився; документ зберігає зроблене.
+	GeenioAI settings	Налаштування GeenioAI
+	New conversation	Нова розмова
+	Refresh credit	Оновити баланс
+	Top up credit	Поповнити баланс
+	Credit available: {usd} USD	Доступний баланс: {usd} USD
+	Allow	Дозволити
+	Decline	Відхилити
+	Summarize this document	Стисло викласти документ
+	Summarize this document in a few sentences.	Стисло виклади цей документ у кількох реченнях.
+	Suggest a title	Запропонувати заголовок
+	Suggest three possible titles for this document.	Запропонуй три можливі заголовки для цього документа.
+	Check the tone	Перевірити тон
+	Read this document and tell me whether its tone is consistent, and what to improve.	Прочитай цей документ і скажи, чи витриманий тон і що варто поліпшити.
+	Ask GeenioAI…	Запитати GeenioAI…
+	Send	Надіслати
+	Account key	Ключ облікового запису
+	Connect	Під'єднати
+	Start a new conversation? The messages so far will be cleared.	Почати нову розмову? Попередні повідомлення буде видалено.
+	Keep	Залишити
+	Assistant language	Мова асистента
+	Automatic (the language you write in)	Автоматично (мова, якою ви пишете)
+	The interface language ({language})	Мова інтерфейсу ({language})
+	Suggested by the account ({model})	Рекомендація облікового запису ({model})
+	Suggested by the account	Рекомендація облікового запису
+	Search models…	Пошук моделей…
+	Loading models…	Завантаження моделей…
+	The models could not be loaded	Не вдалося завантажити моделі
+	Account	Обліковий запис
+	Connected account: {conto}	Під'єднаний обліковий запис: {conto}
+	Reading the account…	Читаю обліковий запис…
+	No account key is set	Ключ облікового запису не задано
+	Change account key	Змінити ключ облікового запису
+	New account key	Новий ключ облікового запису
+	Change key	Змінити ключ
+	Draft with GeenioAI	Чернетка з GeenioAI
+	Connect your account in the GeenioAI pane to start.	Щоб почати, під'єднайте обліковий запис у панелі GeenioAI.
+	Open GeenioAI	Відкрити GeenioAI
+	Describe what you'd like to write	Опишіть, що ви хочете написати
+	Generate	Створити
+	Rewrite the selection	Переписати виділене
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Перепиши виділений текст, щоб він читався краще, зберігши зміст, мову та форматування.
+	Make it shorter	Скоротити
+	Make the selected text shorter, keeping its meaning, language and formatting.	Скороти виділений текст, зберігши зміст, мову та форматування.
+	Fix spelling and grammar	Виправити орфографію та граматику
+	Fix the spelling and grammar of the selected text; change nothing else.	Виправ орфографію та граматику виділеного тексту; більше нічого не змінюй.
+	Summarize the selection	Стисло викласти виділене
+	Summarize the selected text in a few sentences, in the chat.	Стисло виклади виділений текст у кількох реченнях, у чаті.
+	Rewrite this paragraph	Переписати цей абзац
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Перепиши абзац, у якому стоїть курсор, щоб він читався краще, зберігши зміст, мову та форматування.
