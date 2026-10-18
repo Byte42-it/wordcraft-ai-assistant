@@ -442,12 +442,12 @@ pub struct WordApp {
     pub(crate) outline_prev_tab: Option<String>,
     /// Zotero commands in flight (`ui.zotero.*`).
     pub zotero: zotero::ZoteroLink,
+    /// GeenioAI, the AI assistant pane and margin icon ([`assistant`]).
+    pub assistant: assistant::Assistant,
     /// The egui context, once the first frame has run (background work wakes the UI with it).
     pub(crate) ctx: Option<egui::Context>,
     /// Read Aloud: the start of the sentence the caret was last moved to, and the last error shown.
     pub(crate) read_aloud_at: Option<wordcraft_engine::doc::Pos>,
-    /// GeenioAI, the AI assistant pane and margin icon ([`assistant`]).
-    pub assistant: assistant::Assistant,
     pub(crate) read_aloud_error: Option<String>,
     /// The file the document was last explicitly saved to in this session; AutoSave writes only
     /// there. A file that was merely opened isn't rewritten until the user saves it: saving drops
@@ -540,12 +540,12 @@ impl WordApp {
             smart_art_typing: None,
             outline_prev_tab: None,
             zotero: zotero::ZoteroLink::default(),
+            assistant: assistant::Assistant::default(),
             ctx: None,
             read_aloud_at: None,
             read_aloud_error: None,
             autosave_path: None,
             change_picture_target: None,
-            assistant: assistant::Assistant::default(),
             recipient_list_pending: false,
             font_generation: wordcraft_fonts::FontDb::global().generation(),
             dialog_pick: None,
@@ -598,13 +598,13 @@ impl WordApp {
         ui.keyboard = self.session.keymap.clone();
         ui.ribbon = self.session.ribbon.clone();
         ui.ink_pens = self.session.view.draw.pens.clone();
+        ui.assistant_language = self.assistant.language.code().into();
+        ui.assistant_model = self.assistant.model.clone().unwrap_or_default();
         ui
     }
 
     /// Restore preferences saved by [`WordApp::prefs`].
     pub fn apply_prefs(&mut self, ui: UiState) {
-        ui.assistant_language = self.assistant.language.code().into();
-        ui.assistant_model = self.assistant.model.clone().unwrap_or_default();
         self.ui = ui;
         self.ui.backstage = false;
         // A `ui.json` from before the theme setting: its dark-mode switch picks Dark or Light.
@@ -640,15 +640,15 @@ impl WordApp {
         self.session.ribbon = std::mem::take(&mut self.ui.ribbon);
         self.session.ribbon.retain_known(&reg);
         self.session.view.draw.pens = std::mem::take(&mut self.ui.ink_pens);
+        // The assistant owns its settings from here on; `prefs` copies them back when saving.
+        // Junk values read as the defaults.
+        self.assistant.set_language(assistant::Language::parse(&self.ui.assistant_language).unwrap_or_default());
+        self.assistant.set_model(Some(std::mem::take(&mut self.ui.assistant_model)));
     }
 
     /// Run a command the user asked for (ribbon, shortcut, Backstage, file drop). New, Open,
     /// Close, Envelopes, Labels and Finish & Merge on a document with unsaved changes first ask
     /// Save / Don't Save / Cancel, and the command runs once that is answered (`ui.saveChanges`).
-        // The assistant owns its settings from here on; `prefs` copies them back when saving.
-        // Junk values read as the defaults.
-        self.assistant.set_language(assistant::Language::parse(&self.ui.assistant_language).unwrap_or_default());
-        self.assistant.set_model(Some(std::mem::take(&mut self.ui.assistant_model)));
     pub fn run(&mut self, id: &str, params: Value) -> Result<Value, String> {
         // A button whose command needs input the user hasn't given yet opens its dialog (#240).
         if let Some(name) = input_dialog(id, &params)
@@ -1052,11 +1052,6 @@ impl WordApp {
                 self.colors = None;
                 json!({})
             }
-            "ui.changePicture" => {
-                let Some(media) = self.selected_picture_media() else {
-                    return Some(Err("select a picture first".into()));
-                };
-                self.change_picture_target = Some(media);
             // GeenioAI, the AI assistant pane (Home › GeenioAI): `value` shows or hides it, none toggles.
             "ui.assistant" => {
                 let open = p.get("value").and_then(Value::as_bool).unwrap_or(!self.assistant.open);
@@ -1079,6 +1074,11 @@ impl WordApp {
                 }
                 json!({"sent": true})
             }
+            "ui.changePicture" => {
+                let Some(media) = self.selected_picture_media() else {
+                    return Some(Err("select a picture first".into()));
+                };
+                self.change_picture_target = Some(media);
                 self.pick_picture();
                 json!({"pending": self.change_picture_target.is_some()})
             }
@@ -1466,12 +1466,12 @@ impl WordApp {
         }
         self.poll_printing(ctx);
         self.drain_control(ctx);
+        assistant::tick(self, ctx);
         zotero::poll(self, ctx);
         read_aloud::poll(self, ctx);
         self.clear_stale_change_picture();
         let _ = self.poll_file_dialog();
         self.drain_inbox();
-        assistant::tick(self, ctx);
         self.watch_fonts(ctx);
         self.autosave_tick(now_ms());
         if self.autosaves() && self.session.dirty {
