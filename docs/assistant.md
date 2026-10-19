@@ -1,6 +1,6 @@
 # GeenioAI, the AI assistant
 
-> **Last reviewed:** 2026-10-18 · **Last updated:** 2026-10-18 · **Change:** minor (streaming replies through `wordcraft-fantastico`; the interface strings in all 18 languages; previously major: first version, gaps #25) · **Target:** Microsoft Word (Microsoft 365) Copilot pane and margin icon
+> **Last reviewed:** 2026-10-20 · **Last updated:** 2026-10-20 · **Change:** major (the desktop app runs GeenioAI on the shared Craft AI layer: the account is a layer connection, its key in the system keychain, an agreement before anything is sent; previously minor: streaming replies, the interface strings in all 18 languages) · **Target:** Microsoft Word (Microsoft 365) Copilot pane and margin icon
 
 WordCraft's answer to Word's Copilot: a chat pane and a margin icon whose agent writes and edits
 the open document with WordCraft's own commands. Any model can sit behind it: the desktop app and
@@ -24,11 +24,21 @@ step**: Undo takes back everything a request changed.
 ## Keys and privacy
 
 - The onboarding asks for a FANTASTICO **account key** (`ck-fant-…`). The desktop app checks it
-  with the account service before storing it in `<settings>/assistant/fantastico.key` (mode 0600
-  on Unix). Nothing in the interface can read the key back: the pane can store one or replace it
+  with the account service, then saves the account as a connection of the shared **Craft AI layer**
+  ([craft-ai-integrations](https://github.com/storytold/craft-ai-integrations)) with the key in the
+  **system keychain** (Credential Manager, Keychain, Secret Service). An account connected in the
+  Craft launcher or another Craft app works here without a key, and one connected here works there.
+  Nothing in the interface can read the key back: the pane can store one or replace it
   (Settings › Change account key), never show it. No command, control method or log line carries it.
+  A key an older WordCraft kept in `<settings>/assistant/fantastico.key` moves into the keychain
+  the first time GeenioAI needs it, and the file is removed.
+- **Nothing is sent before the user agrees.** Before the first request, a card in the pane says
+  what goes where (the requests, the document text the assistant reads and what its commands
+  return, to FANTASTICO and the provider it routes to) and asks to allow it for WordCraft. The
+  layer keeps the agreement per app and connection, and refuses a request without it.
 - Prompts and the document text go straight to the model provider through FANTASTICO's edge
-  endpoint; FANTASTICO mints short-lived, capped runtime keys and never sees the prompts.
+  endpoint; FANTASTICO mints short-lived, capped runtime keys and never sees the prompts. The
+  layer's job log records each request's model and sizes, never its text.
 - Runs without preferences (`WORDCRAFT_NO_PREFS`, agents' test runs) have no assistant and never
   touch the key. The web build says the assistant isn't available yet (no host).
 
@@ -50,7 +60,7 @@ step**: Undo takes back everything a request changed.
 | L5 | `wordcraft-assistant` | The agent loop: the model asks for tools, they run against any `wordcraft_mcp::Backend` (a headless session or the app), their results go back until the model answers. No network code: the host brings the model as a `Provider` (OpenAI-style chat completions). Model output is hostile input: at most 20 steps a turn and 16 tool calls a reply, cut results, malformed arguments and unknown tools answered with errors, old turns forgotten whole. Out of steps, the model gets one last call without tools to say what it did |
 | L6 | `wordcraft-ui-egui::assistant` | The pane and the margin icon. The loop runs on a worker thread; its tools reach the document through the control methods, run on the UI thread each frame (`tick`), joined into one undo step per turn |
 | L5 (native) | `wordcraft-fantastico` | A FANTASTICO account as a streaming `Provider`: a transport of its own under `fantastico-sdk` reads the provider's server-sent events for a `stream: true` request, hands every piece of text on, and gives the SDK the same JSON a whole reply would carry (keys, retries and error classification stay the SDK's). Native only (`Class::Native` in the layer table): the web build never sees it |
-| app | `apps/wordcraft/src/assistant_host.rs` | The FANTASTICO host: the key store and the `fantastico-sdk` client (models, balance); conversations run on `wordcraft-fantastico` |
+| app | `apps/wordcraft/src/assistant_host.rs` | The host on the Craft AI layer (`craft-ai-client`): GeenioAI is a tool (`geenio-chat`) bound to a FANTASTICO connection and model in the shared store; each model call is a layer job run by the `craft-ai-fantastico` adapter, which carries the whole conversation (earlier replies and tool results as turns) and streams the reply. The `fantastico-sdk` client reads the account and its credit. `wordcraft-cli ask` still uses `wordcraft-fantastico` with `$FANTASTICO_KEY` |
 
 The tools offered to the model are the command-level MCP tools: `get_text`, `inspect_document`,
 `select_text`, `type_text`, `execute`, `batch`, `list_commands`, and, behind a confirmation,
@@ -70,5 +80,6 @@ Replies stream: the pane shows the model's text as it arrives, in a bubble that 
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-20 | major | The desktop host moves onto the Craft AI layer: shared connection, key in the system keychain, agreement card before the first request, the old key file migrated |
 | 2026-10-18 | minor | Streaming replies (`wordcraft-fantastico`, `Provider::complete_streaming`); the interface strings translated in every catalog |
 | 2026-10-18 | major | First version: pane, margin icon, FANTASTICO host, `wordcraft-cli ask` |

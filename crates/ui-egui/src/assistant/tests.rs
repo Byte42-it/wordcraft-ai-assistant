@@ -16,11 +16,22 @@ struct FakeHost {
     stream: AtomicBool,
     replies: Mutex<Vec<Value>>,
     events: Mutex<Vec<AssistantEvent>>,
+    /// The agreement the host asks for, until it is given.
+    consent: Mutex<Option<Consent>>,
+    /// The model endpoint was asked for: something was about to be sent.
+    asked_provider: AtomicBool,
 }
 
 impl FakeHost {
     fn new(replies: Vec<Value>) -> Arc<Self> {
-        Arc::new(Self { key: AtomicBool::new(false), stream: AtomicBool::new(false), replies: Mutex::new(replies), events: Mutex::default() })
+        Arc::new(Self {
+            key: AtomicBool::new(false),
+            stream: AtomicBool::new(false),
+            replies: Mutex::new(replies),
+            events: Mutex::default(),
+            consent: Mutex::default(),
+            asked_provider: AtomicBool::new(false),
+        })
     }
     fn with_key(replies: Vec<Value>) -> Arc<Self> {
         let h = Self::new(replies);
@@ -61,6 +72,7 @@ impl AssistantHost for FakeHost {
             .collect())
     }
     fn provider(&self) -> Result<(Box<dyn Provider + Send>, String), String> {
+        self.asked_provider.store(true, Ordering::SeqCst);
         let replies = std::mem::take(&mut *self.replies.lock().unwrap());
         let scripted = if self.stream.load(Ordering::SeqCst) { Scripted::streaming(replies) } else { Scripted::new(replies) };
         Ok((Box::new(scripted), "m".into()))
@@ -71,6 +83,42 @@ impl AssistantHost for FakeHost {
     fn event(&self, event: &AssistantEvent) {
         self.events.lock().unwrap().push(event.clone());
     }
+    fn consent(&self) -> Option<Consent> {
+        self.consent.lock().unwrap().clone()
+    }
+    fn agree(&self) -> Result<(), String> {
+        *self.consent.lock().unwrap() = None;
+        Ok(())
+    }
+}
+
+#[test]
+fn nothing_is_sent_before_the_user_agrees() {
+    let host = FakeHost::with_key(vec![text_reply("Ciao.")]);
+    *host.consent.lock().unwrap() = Some(Consent { service: "Fake Accounts".into(), destination: "accounts.example".into() });
+    let mut app = app_with(host.clone());
+    let ctx = egui::Context::default();
+    app.run("ui.assistant", json!({})).unwrap();
+
+    // Declined (the pump answers no): no endpoint, the conversation untouched, the reason said.
+    app.assistant.input = "ciao".into();
+    send(&mut app, &ctx);
+    pump(&mut app, &ctx);
+    assert!(!host.asked_provider.load(Ordering::SeqCst));
+    assert!(app.assistant.messages.iter().any(|m| m.role == Role::Error && m.text.contains("agreement")));
+    assert!(host.consent().is_some());
+
+    // Agreed: the question names the service and where the data goes, then the turn runs.
+    app.assistant.input = "ciao".into();
+    send(&mut app, &ctx);
+    wait(&mut app, &ctx, |a| a.assistant.confirm.is_some());
+    let (question, reply) = app.assistant.confirm.take().unwrap();
+    assert!(question.contains("Fake Accounts") && question.contains("accounts.example"), "{question}");
+    reply.send(true).unwrap();
+    pump(&mut app, &ctx);
+    assert!(host.asked_provider.load(Ordering::SeqCst));
+    assert!(host.consent().is_none());
+    assert!(app.assistant.messages.iter().any(|m| m.role == Role::Assistant && m.text == "Ciao."));
 }
 
 fn app_with(host: Arc<FakeHost>) -> WordApp {

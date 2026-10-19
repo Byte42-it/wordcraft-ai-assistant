@@ -2134,6 +2134,8 @@
 	Credit available: {usd} USD	Доступний баланс: {usd} USD
 	Allow	Дозволити
 	Decline	Відхилити
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	Щоб відповісти, GeenioAI надсилає до {service} ({destination}) ваші запити, текст документа, який він читає, і результати своїх команд. Дозволити це для WordCraft?
+	Nothing was sent: GeenioAI needs your agreement first.	Нічого не надіслано: GeenioAI спершу потрібна ваша згода.
 	Summarize this document	Стисло викласти документ
 	Summarize this document in a few sentences.	Стисло виклади цей документ у кількох реченнях.
 	Suggest a title	Запропонувати заголовок

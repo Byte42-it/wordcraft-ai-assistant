@@ -2520,6 +2520,8 @@ preview	Title	Örnek
 	Credit available: {usd} USD	Kullanılabilir bakiye: {usd} USD
 	Allow	İzin ver
 	Decline	Reddet
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	Yanıt vermek için GeenioAI isteklerini, okuduğu belge metnini ve komutlarının sonuçlarını {service} ({destination}) hizmetine gönderir. WordCraft için buna izin verilsin mi?
+	Nothing was sent: GeenioAI needs your agreement first.	Hiçbir şey gönderilmedi: GeenioAI önce onayına ihtiyaç duyuyor.
 	Summarize this document	Bu belgeyi özetle
 	Summarize this document in a few sentences.	Bu belgeyi birkaç cümleyle özetle.
 	Suggest a title	Başlık öner

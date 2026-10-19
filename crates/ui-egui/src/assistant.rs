@@ -168,6 +168,34 @@ pub trait AssistantHost: Send + Sync {
     /// The credit left, when it can be read. Blocking.
     fn balance(&self) -> Option<f64>;
     fn event(&self, event: &AssistantEvent);
+    /// What the user has to agree to before anything is sent, while they haven't: the pane asks
+    /// before the turn and records a yes with [`agree`](Self::agree). Blocking.
+    fn consent(&self) -> Option<Consent> {
+        None
+    }
+    /// Record the agreement [`consent`](Self::consent) asked for. Blocking.
+    fn agree(&self) -> Result<(), String> {
+        Ok(())
+    }
+}
+
+/// What a turn sends, and where, for the user to agree to once.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Consent {
+    /// The service, as the user knows it.
+    pub service: String,
+    /// Where the data goes: the service's address and the model providers it routes to.
+    pub destination: String,
+}
+
+/// The question that asks for [`Consent`].
+fn consent_text(c: &Consent) -> String {
+    crate::i18n::fmt(
+        tl!(
+            "To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?"
+        ),
+        &[("service", &c.service), ("destination", &c.destination)],
+    )
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -227,6 +255,11 @@ enum Update {
     Confirm {
         name: String,
         args: Value,
+        reply: Sender<bool>,
+    },
+    /// Nothing has been sent: the user is asked to agree first.
+    Consent {
+        consent: Consent,
         reply: Sender<bool>,
     },
     Done {
@@ -609,6 +642,18 @@ pub(crate) fn ask(app: &mut WordApp, ctx: &egui::Context, prompt: &str, draft: b
             let _ = updates.send(Update::Done { conversation, error, balance, stopped });
             ctx.request_repaint();
         };
+        // Agreement comes before anything leaves the computer; a no keeps the conversation as it was.
+        if let Some(consent) = host.consent() {
+            let (reply, answer) = channel();
+            let _ = updates.send(Update::Consent { consent, reply });
+            ctx.request_repaint();
+            if !answer.recv_timeout(CONFIRM_TIMEOUT).unwrap_or(false) {
+                return done(conversation, Some(tl!("Nothing was sent: GeenioAI needs your agreement first.").to_string()), None, false);
+            }
+            if let Err(e) = host.agree() {
+                return done(conversation, Some(e), None, false);
+            }
+        }
         let mut conv = match conversation {
             Some(c) => c,
             None => match host.provider() {
@@ -837,6 +882,11 @@ fn update(a: &mut Assistant, u: Update, registry: &wordcraft_engine::Registry) -
                 let _ = old.send(false);
             }
         }
+        Update::Consent { consent, reply } => {
+            if let Some((_, old)) = a.confirm.replace((consent_text(&consent), reply)) {
+                let _ = old.send(false);
+            }
+        }
         Update::Done { conversation, error, balance, stopped } => {
             a.busy = false;
             a.activity = None;
@@ -948,7 +998,9 @@ pub fn show(app: &mut WordApp, ui: &mut egui::Ui) {
         });
     });
     ui.separator();
-    let footer = if has_key { 78.0 } else { 66.0 } + if app.assistant.confirm.is_some() { 76.0 } else { 0.0 };
+    // A long question (the agreement) wraps to more lines than a tool's.
+    let card = app.assistant.confirm.as_ref().map_or(0.0, |(q, _)| if q.chars().count() > 120 { 110.0 } else { 76.0 });
+    let footer = if has_key { 78.0 } else { 66.0 } + card;
     let list_height = (ui.available_height() - footer).max(80.0);
     egui::ScrollArea::vertical().id_salt("assistant-messages").max_height(list_height).auto_shrink([false, false]).stick_to_bottom(true).show(
         ui,

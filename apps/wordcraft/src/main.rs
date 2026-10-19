@@ -327,7 +327,10 @@ fn main() -> eframe::Result {
             if prefs_enabled()
                 && let Some(dir) = wordcraft_control_key::settings_dir()
             {
-                app.assistant.set_host(std::sync::Arc::new(assistant_host::FantasticoHost::new(&dir)));
+                match assistant_host::LayerHost::new(&dir) {
+                    Ok(host) => app.assistant.set_host(std::sync::Arc::new(host)),
+                    Err(e) => log::warn!("GeenioAI is off: the AI layer is not available ({e})"),
+                }
             }
             // A region chosen in File › Options replaces the system's for the first blank
             // document too (#838).

@@ -2,7 +2,7 @@
 
 **Stage: alpha** · next: beta, ~15 points (60% → 75% ready for real work) and ~150–230 h away
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-18 · **Change:** minor (GeenioAI (the AI assistant) landed, #25: AI features 40% → 70%; previously trivial: progress log: privacy options on save, #1062; previously trivial: progress log: equation pictures in theme colours on Windows, #1002; previously trivial: symbol fonts, #776; previously trivial: the save prompt answers from the keyboard, #861; previously trivial: table column and row markers on the rulers, #700; previously trivial: table borders and the resize handle drag on the page, #217; previously trivial: formatting revisions landed, #41; previously trivial: Draw tab ink, #307, and Draw Table and Eraser, #303, landed: catalog 402/434; previously minor: readiness table with hours per audience; full number back to the additive weighted sum, 60%; mainstream and essentials numbers added; alpha gate checked; previously major: full re-measure against Word for Mac 16.113.4; restructured to the craftrules progress-docs standard) · **Target:** Microsoft Word (Microsoft 365) for Mac 16.113.4
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-20 · **Change:** trivial (progress log: GeenioAI on the shared Craft AI layer, #25; previously minor: GeenioAI (the AI assistant) landed, #25: AI features 40% → 70%; previously trivial: progress log: privacy options on save, #1062; previously trivial: progress log: equation pictures in theme colours on Windows, #1002; previously trivial: symbol fonts, #776; previously trivial: the save prompt answers from the keyboard, #861; previously trivial: table column and row markers on the rulers, #700; previously trivial: table borders and the resize handle drag on the page, #217; previously trivial: formatting revisions landed, #41; previously trivial: Draw tab ink, #307, and Draw Table and Eraser, #303, landed: catalog 402/434; previously minor: readiness table with hours per audience; full number back to the additive weighted sum, 60%; mainstream and essentials numbers added; alpha gate checked; previously major: full re-measure against Word for Mac 16.113.4; restructured to the craftrules progress-docs standard) · **Target:** Microsoft Word (Microsoft 365) for Mac 16.113.4
 
 > **Printing update:** 2026-10-12 · direct desktop printing through craft-print; details below.
 
@@ -135,6 +135,7 @@ Ranked, to beta (detail and remaining milestones in [docs/roadmap.md](docs/roadm
 
 | Date | What landed |
 |---|---|
+| 2026-10-20 | GeenioAI runs on the shared Craft AI layer ([craft-ai-integrations](https://github.com/storytold/craft-ai-integrations)) through the new `craft-ai-fantastico` adapter: the FANTASTICO account is a connection every Craft app and the launcher share, its key moves into the system keychain (an older key file is migrated), and a card in the pane asks before anything is sent for the first time |
 | 2026-10-18 | GeenioAI streams its replies (the text shows as it arrives, in the pane and from `wordcraft-cli ask`), through a new native crate `wordcraft-fantastico` that reads the provider's event stream under the FANTASTICO SDK; its interface strings are now in all 18 languages |
 | 2026-10-18 | GeenioAI, the AI assistant (#25, [docs/assistant.md](docs/assistant.md)): Home › GeenioAI opens a chat pane like Word's Copilot pane, and an icon in the left margin beside the caret's paragraph (like Word's Copilot icon) offers a Draft box on an empty paragraph and Rewrite, Make it shorter, Fix spelling and grammar and Summarize on a selection. The agent (new L5 crate `wordcraft-assistant`) edits the document with WordCraft's own commands through the MCP tools; one request is one undo step. The model is any the user's FANTASTICO account offers (Claude, GPT, Gemini, Llama…), chosen in the pane's settings with the reply language; the account key is checked before it is stored and never shown. `ui.assistant`, `ui.assistant.ask` and `wordcraft-cli ask` for agents |
 | 2026-10-12 | Text boxes from older Word files (VML) keep their internal margins, Resize shape to fit text and vertical alignment, so letterhead address blocks and form headers sit where Word puts them instead of 7 pt in and 4 pt down. Hidden drawings stay hidden (they were drawn as empty boxes) and are kept on save |
@@ -289,6 +290,7 @@ Ranked, to beta (detail and remaining milestones in [docs/roadmap.md](docs/roadm
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-20 | trivial | Progress log: GeenioAI on the shared Craft AI layer (#25) |
 | 2026-10-18 | trivial | Progress log: GeenioAI streaming replies and translations |
 | 2026-10-18 | minor | GeenioAI (the AI assistant) landed (#25): pane, margin icon, FANTASTICO host, `wordcraft-cli ask`; AI features 40% → 70% |
 | 2026-10-12 | trivial | Progress log: VML text box margins, fit and alignment; hidden drawings |

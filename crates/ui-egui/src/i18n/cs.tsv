@@ -2127,6 +2127,8 @@
 	Credit available: {usd} USD	Dostupný kredit: {usd} USD
 	Allow	Povolit
 	Decline	Odmítnout
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	Aby mohl odpovědět, posílá GeenioAI službě {service} ({destination}) tvé požadavky, text dokumentu, který čte, a výsledky svých příkazů. Povolit to pro WordCraft?
+	Nothing was sent: GeenioAI needs your agreement first.	Nic nebylo odesláno: GeenioAI nejprve potřebuje tvůj souhlas.
 	Summarize this document	Shrnout tento dokument
 	Summarize this document in a few sentences.	Shrň tento dokument do několika vět.
 	Suggest a title	Navrhnout název

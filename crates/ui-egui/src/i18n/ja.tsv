@@ -2122,6 +2122,8 @@
 	Credit available: {usd} USD	利用可能なクレジット: {usd} USD
 	Allow	許可
 	Decline	拒否
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	回答のため、GeenioAI はあなたの依頼、読み取った文書のテキスト、コマンドの結果を {service} ({destination}) に送信します。WordCraft でこれを許可しますか?
+	Nothing was sent: GeenioAI needs your agreement first.	何も送信されていません。GeenioAI には先にあなたの同意が必要です。
 	Summarize this document	この文書を要約
 	Summarize this document in a few sentences.	この文書を数文で要約してください。
 	Suggest a title	タイトルを提案

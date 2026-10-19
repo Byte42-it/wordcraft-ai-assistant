@@ -2136,6 +2136,8 @@
 	Credit available: {usd} USD	Доступан кредит: {usd} USD
 	Allow	Дозволи
 	Decline	Одбиј
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	Да би одговорио, GeenioAI шаље сервису {service} ({destination}) твоје захтеве, текст документа који чита и резултате својих команди. Дозволити то за WordCraft?
+	Nothing was sent: GeenioAI needs your agreement first.	Ништа није послато: GeenioAI прво треба твоју сагласност.
 	Summarize this document	Сажми овај документ
 	Summarize this document in a few sentences.	Сажми овај документ у неколико реченица.
 	Suggest a title	Предложи наслов

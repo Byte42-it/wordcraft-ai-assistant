@@ -1,95 +1,320 @@
-//! GeenioAI's (the AI assistant's) host on the desktop: the FANTASTICO account key and the model endpoint.
+//! GeenioAI's (the AI assistant's) host on the desktop, on the Craft AI layer.
 //!
-//! The key is write-only for everything outside this file. [`KeyStore::set`] stores the first one
-//! and [`KeyStore::replace`] puts a checked new one in its place; only [`FantasticoHost::client`]
-//! reads it back, to call the account service. No command, control method, log line or message
-//! shows it. It lives in `<settings dir>/assistant/fantastico.key`.
+//! The FANTASTICO account is a connection in the layer's shared store, the one every Craft app and
+//! the launcher read: an account connected here works in the others, and one connected there
+//! works here. The key lives in the system keychain (`craft-ai-native`), never in a file of ours,
+//! and stays write-only for the interface: [`AssistantHost::connect`] and
+//! [`AssistantHost::change_key`] store one after FANTASTICO has checked it, and only this file
+//! reads it back, to read the account's credit. Requests go through the layer
+//! (`craft-ai-client`), which checks the user's agreement before anything is sent and records
+//! each job; the `craft-ai-fantastico` adapter carries GeenioAI's conversation and streams the
+//! replies.
+//!
+//! A key stored by an older WordCraft in `<settings dir>/assistant/fantastico.key` moves into the
+//! keychain the first time the assistant needs it, and the file is then removed.
 
-use std::io::Write;
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex, PoisonError};
+use std::time::{Duration, Instant};
 
-use fantastico_sdk::{Fantastico, Options, Surface};
+use craft_ai_client::{AiClient, ConnectionManager, ProviderFactory};
+use craft_ai_core::job::{Event, JobState};
+use craft_ai_core::{
+    AiError, AppId, Billing, CapabilityId, Connection, ConnectionDraft, ConnectionId, ConsentLedger, ErrorKind, InputRole, ModelId, Payload, Request,
+    Role, RoleId,
+};
+use craft_ai_native::secrets::{EnvStore, KeychainStore, LayeredStore, SecretStore, secret_for};
+use craft_ai_native::shared::SharedStore;
+use craft_ai_native::{ConsentFile, HistoryFile};
+use fantastico_sdk::{Fantastico, Options};
 use serde_json::Value;
-use wordcraft_fantastico::Streaming;
-use wordcraft_ui_egui::assistant::{Account, AssistantEvent, AssistantHost, ModelInfo, Service};
+use wordcraft_assistant::{Delta, Provider};
+use wordcraft_ui_egui::assistant::{Account, AssistantEvent, AssistantHost, Consent, ModelInfo, Service};
 
-/// The largest key file read back (a key is under a hundred bytes).
-const MAX_KEY_BYTES: u64 = 4096;
-
+/// The app, as the layer's store and consent records name it.
+const APP: &str = "wordcraft";
+/// GeenioAI's tool in the layer: which connection and model it runs on.
+const ROLE: &str = "geenio-chat";
+/// The account service a new connection points at.
+const ENDPOINT: &str = "https://fantastico.cc/api";
+/// The name a new connection gets, in the launcher and every app.
+const LABEL: &str = "FANTASTICO";
 /// The account service's site for WordCraft: where a key comes from and the credit is topped up.
 const SITE: &str = "https://artcraft.fantastico.cc";
+/// Where the prompts go from the account: the provider FANTASTICO's runtime keys are for.
+const ROUTED_TO: &str = "openrouter.ai";
+/// The largest key file of an older WordCraft read back (a key is under a hundred bytes).
+const MAX_KEY_BYTES: u64 = 4096;
+/// How often a running reply is polled for its next pieces.
+const POLL: Duration = Duration::from_millis(25);
+/// The longest one model call may take before it is cancelled.
+const CALL_TIMEOUT: Duration = Duration::from_secs(600);
+/// How long `has_key`'s answer is reused: the pane asks every frame.
+const HAS_KEY_TTL: Duration = Duration::from_secs(2);
 
-pub struct KeyStore {
-    path: PathBuf,
+fn options() -> Options {
+    Options { title: "WordCraft".into(), referer: "https://github.com/storytold/wordcraft".into(), ..Options::default() }
 }
 
-impl KeyStore {
-    pub fn new(settings_dir: &Path) -> Self {
-        Self { path: settings_dir.join("assistant").join("fantastico.key") }
+fn chat_role() -> Result<Role, AiError> {
+    let invalid = |e: craft_ai_core::ids::IdError| AiError::new(ErrorKind::Internal, e.to_string());
+    Ok(Role {
+        id: RoleId::new(ROLE).map_err(invalid)?,
+        label: "GeenioAI".into(),
+        capability: CapabilityId::parse("text.complete").map_err(|e| AiError::new(ErrorKind::Internal, e.to_string()))?,
+        inputs: vec![InputRole::parse(craft_ai_fantastico::TURN).map_err(invalid)?],
+    })
+}
+
+/// The adapter registered under its name, naming WordCraft in the provider's usage reports.
+fn with_fantastico(mut factory: ProviderFactory) -> ProviderFactory {
+    factory.register(craft_ai_fantastico::PROVIDER_NAME, craft_ai_fantastico::build_titled("WordCraft"));
+    factory
+}
+
+/// Everything the host and its conversations share.
+struct Layer {
+    client: AiClient,
+    manager: ConnectionManager,
+    shared: SharedStore,
+    secrets: Arc<dyn SecretStore>,
+    /// Where agreements are kept; in memory for this run when there is no settings folder.
+    consent_file: Option<ConsentFile>,
+    ledger: Mutex<ConsentLedger>,
+    role: Role,
+}
+
+impl Layer {
+    fn new(
+        app: AppId,
+        shared: SharedStore,
+        secrets: Arc<dyn SecretStore>,
+        factory: ProviderFactory,
+        probes: ProviderFactory,
+        consent_file: Option<ConsentFile>,
+    ) -> Result<Self, AiError> {
+        let client = AiClient::new(app, shared.clone(), secrets.clone()).with_factory(factory);
+        let manager = ConnectionManager::new(shared.clone(), secrets.clone()).with_probe_factory(probes);
+        Ok(Self { client, manager, shared, secrets, consent_file, ledger: Mutex::default(), role: chat_role()? })
     }
 
-    pub fn is_set(&self) -> bool {
-        self.path.is_file()
-    }
-
-    /// Store `key` if none is stored.
-    pub fn set(&self, key: &str) -> Result<(), String> {
-        if self.is_set() {
-            return Err("A key is already set on this computer".into());
+    /// The FANTASTICO connection GeenioAI uses: the one its tool is bound to, else the first one.
+    fn connection(&self) -> Result<Option<Connection>, String> {
+        let store = self.shared.load().map_err(|e| AiError::from(e).message)?;
+        if let Ok(r) = store.resolve(self.client.app(), &self.role)
+            && r.connection.provider == craft_ai_fantastico::PROVIDER_NAME
+        {
+            return Ok(Some(r.connection.clone()));
         }
-        write_new(&self.path, key)
+        Ok(store.connections.into_iter().find(|c| c.enabled && c.provider == craft_ai_fantastico::PROVIDER_NAME))
     }
 
-    /// Put `key` in place of the stored one. It is written to a new file first and then moved
-    /// over the old one, so a failure leaves the old key intact.
-    pub fn replace(&self, key: &str) -> Result<(), String> {
-        let fresh = self.path.with_extension("key.new");
-        let _ = std::fs::remove_file(&fresh);
-        write_new(&fresh, key)?;
-        std::fs::rename(&fresh, &self.path).map_err(|e| {
-            let _ = std::fs::remove_file(&fresh);
-            format!("The key could not be stored: {e}")
-        })
+    /// The model the tool is bound to now, when the binding works.
+    fn bound(&self) -> Option<(ConnectionId, ModelId)> {
+        let store = self.shared.load().ok()?;
+        let r = store.resolve(self.client.app(), &self.role).ok()?;
+        Some((r.connection.id.clone(), r.model.id.clone()))
     }
 
-    fn load(&self) -> Result<String, String> {
-        let size = std::fs::metadata(&self.path).map_err(|_| "No account key is set".to_string())?.len();
-        if size > MAX_KEY_BYTES {
-            return Err("The stored account key is not readable".into());
+    fn key(&self, connection: &Connection) -> Result<String, String> {
+        match secret_for(self.secrets.as_ref(), connection).map_err(|e| e.message)? {
+            Some(key) => Ok(key.expose().to_string()),
+            None => Err("No account key is set".into()),
         }
-        let key = std::fs::read_to_string(&self.path).map_err(|_| "The stored account key is not readable".to_string())?;
-        Ok(key.trim().to_string())
+    }
+
+    fn account_client(&self, connection: &Connection) -> Result<Fantastico, String> {
+        Fantastico::new(self.key(connection)?, options()).map_err(|e| e.message)
+    }
+
+    /// Store `key` on a new connection, or on `existing`, with the models the account offers.
+    fn save_key(&self, key: &str, existing: Option<&Connection>) -> Result<ConnectionId, String> {
+        let mut draft = match existing {
+            Some(c) => ConnectionDraft::from_connection(c),
+            None => {
+                let mut d = ConnectionDraft::default();
+                d.label = LABEL.into();
+                d.provider = craft_ai_fantastico::PROVIDER_NAME.into();
+                d.endpoint = ENDPOINT.into();
+                d.billing = Billing::Metered;
+                d.uses_key = true;
+                d.enabled = true;
+                d
+            }
+        };
+        draft.key = key.to_string();
+        let report = self.manager.test_draft(&draft).map_err(|e| e.message)?;
+        draft.set_models(report.models);
+        let saved = self.manager.save(&draft).map_err(|e| e.to_string())?;
+        if let Some(w) = saved.warning {
+            log::warn!("GeenioAI: {w}");
+        }
+        Ok(saved.id)
+    }
+
+    /// Run the tool on `model`. A model the saved list doesn't have yet is looked for in the
+    /// account's current list once.
+    fn bind(&self, connection: &ConnectionId, model: &str) -> Result<(), String> {
+        let id = ModelId::new(model).map_err(|_| format!("{model} is not a model name"))?;
+        if self.client.bind(&self.role, connection, &id).is_ok() {
+            return Ok(());
+        }
+        self.manager.test_saved(connection, true).map_err(|e| e.message)?;
+        self.client.bind(&self.role, connection, &id).map_err(|_| format!("The account does not offer the model {model}"))
+    }
+
+    /// The tool bound to `model` on GeenioAI's connection, unless it already is.
+    fn ensure_bound(&self, model: &str) -> Result<(), String> {
+        let connection = self.connection()?.ok_or("No account key is set")?;
+        if self.bound().is_some_and(|(c, m)| c == connection.id && m.as_str() == model) {
+            return Ok(());
+        }
+        self.bind(&connection.id, model)
+    }
+
+    /// The tool bound to something: the model it has, else the account's suggestion, else the
+    /// first model of the connection.
+    fn ensure_some_binding(&self) -> Result<(), String> {
+        if self.bound().is_some() {
+            return Ok(());
+        }
+        let connection = self.connection()?.ok_or("No account key is set")?;
+        let suggested = self.account_client(&connection).ok().and_then(|c| c.config().ok()).map(|c| c.model);
+        let first = connection.models.first().map(|m| m.id.as_str().to_string());
+        let model = suggested.or(first).unwrap_or_else(|| fantastico_sdk::DEFAULT_MODEL.to_string());
+        self.bind(&connection.id, &model)
+    }
+
+    fn load_ledger(&self) -> ConsentLedger {
+        match &self.consent_file {
+            Some(f) => f.load_or_empty(),
+            None => self.ledger.lock().unwrap_or_else(PoisonError::into_inner).clone(),
+        }
+    }
+
+    fn save_ledger(&self, ledger: &ConsentLedger) -> Result<(), String> {
+        match &self.consent_file {
+            Some(f) => f.save(ledger).map_err(|e| e.message),
+            None => {
+                *self.ledger.lock().unwrap_or_else(PoisonError::into_inner) = ledger.clone();
+                Ok(())
+            }
+        }
+    }
+
+    /// A request of the kind every turn is (text turns, tool definitions), for the agreement:
+    /// agreeing to it covers them all.
+    fn sample_plan(&self) -> Result<craft_ai_client::Plan, String> {
+        let turn = InputRole::parse(craft_ai_fantastico::TURN).map_err(|e| e.to_string())?;
+        let request = Request::new(self.role.capability.clone())
+            .with_input(turn, Payload::text(r#"{"role":"user","content":""}"#))
+            .with_param("tools", Value::Array(Vec::new()));
+        self.client.plan(&self.role, request).map_err(|e| e.message)
+    }
+
+    /// One model call: the conversation in, the whole reply out, its text to `on_delta` as it
+    /// arrives.
+    fn call(&self, request: &Value, stream: bool, on_delta: &mut (dyn FnMut(Delta<'_>) + Send)) -> Result<Value, String> {
+        let model = request.get("model").and_then(Value::as_str).filter(|m| !m.trim().is_empty()).ok_or("The request names no model")?;
+        self.ensure_bound(model.trim())?;
+        let messages = request.get("messages").and_then(Value::as_array).ok_or("The request has no messages")?;
+        let turn = InputRole::parse(craft_ai_fantastico::TURN).map_err(|e| e.to_string())?;
+        let mut req = Request::new(self.role.capability.clone());
+        for m in messages {
+            req = req.with_input(turn.clone(), Payload::text(m.to_string()));
+        }
+        if let Some(tools) = request.get("tools") {
+            req = req.with_param("tools", tools.clone());
+        }
+        if stream {
+            req = req.streaming();
+        }
+        let plan = self.client.plan(&self.role, req).map_err(|e| e.message)?;
+        let job = self.client.start(&plan, &self.load_ledger()).map_err(|e| match e.kind {
+            ErrorKind::ConsentRequired => "Nothing was sent: GeenioAI needs your agreement first.".to_string(),
+            _ => e.message,
+        })?;
+        let deadline = Instant::now() + CALL_TIMEOUT;
+        let (mut started, mut reply) = (false, None);
+        loop {
+            let snap = job.poll().map_err(|e| e.message)?;
+            for event in snap.events {
+                match event {
+                    Event::TextDelta { text } => {
+                        if !started {
+                            on_delta(Delta::Start);
+                            started = true;
+                        }
+                        on_delta(Delta::Text(&text));
+                    }
+                    Event::Output(o) if o.label.as_deref() == Some(craft_ai_fantastico::COMPLETION) => {
+                        if let Payload::Inline { data, .. } = o.payload {
+                            reply = serde_json::from_slice::<Value>(&data).ok();
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            match snap.state {
+                JobState::Succeeded => break,
+                JobState::Failed { error } => return Err(error.message),
+                JobState::Cancelled => return Err("The request was cancelled".into()),
+                JobState::Queued | JobState::Running { .. } => {}
+            }
+            if Instant::now() > deadline {
+                let _ = job.cancel();
+                return Err("FANTASTICO did not answer in time".into());
+            }
+            std::thread::sleep(POLL);
+        }
+        reply.ok_or_else(|| "FANTASTICO sent an incomplete reply".to_string())
     }
 }
 
-/// Write `key` to a file created new (never truncated), readable by this user only where the
-/// platform has modes.
-fn write_new(path: &Path, key: &str) -> Result<(), String> {
-    if let Some(dir) = path.parent() {
-        std::fs::create_dir_all(dir).map_err(|e| format!("The key could not be stored: {e}"))?;
-    }
-    let mut options = std::fs::OpenOptions::new();
-    options.write(true).create_new(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    let mut file = options.open(path).map_err(|e| format!("The key could not be stored: {e}"))?;
-    file.write_all(key.as_bytes()).and_then(|()| file.sync_all()).map_err(|e| format!("The key could not be stored: {e}"))
+/// A conversation's model endpoint: each call is one job on the layer.
+struct LayerProvider {
+    layer: Arc<Layer>,
 }
 
-pub struct FantasticoHost {
-    store: KeyStore,
-}
-
-impl FantasticoHost {
-    pub fn new(settings_dir: &Path) -> Self {
-        Self { store: KeyStore::new(settings_dir) }
+impl Provider for LayerProvider {
+    fn complete(&mut self, request: &Value) -> Result<Value, String> {
+        self.layer.call(request, false, &mut |_| {})
     }
 
-    fn options() -> Options {
-        Options { title: "WordCraft".into(), referer: "https://github.com/storytold/wordcraft".into(), ..Options::default() }
+    fn complete_streaming(&mut self, request: &Value, on_delta: &mut (dyn FnMut(Delta<'_>) + Send)) -> Result<Value, String> {
+        self.layer.call(request, true, on_delta)
+    }
+}
+
+pub struct LayerHost {
+    layer: Arc<Layer>,
+    /// The key file of an older WordCraft, moved into the keychain when found.
+    legacy: PathBuf,
+    has_key: Mutex<Option<(Instant, bool)>>,
+}
+
+impl LayerHost {
+    /// The host on the layer's shared store and the system keychain.
+    pub fn new(settings_dir: &Path) -> Result<Self, String> {
+        let app = AppId::new(APP).map_err(|e| e.to_string())?;
+        let shared = SharedStore::at_default_location().map_err(|e| AiError::from(e).message)?;
+        let secrets: Arc<dyn SecretStore> = Arc::new(LayeredStore::new(vec![Box::new(EnvStore::new()), Box::new(KeychainStore::new())]));
+        let consent_file = ConsentFile::at_default_location(&app);
+        let mut layer =
+            Layer::new(app, shared, secrets, with_fantastico(ProviderFactory::standard()), with_fantastico(ProviderFactory::probing()), consent_file)
+                .map_err(|e| e.message)?;
+        if let Some(history) = HistoryFile::at_default_location() {
+            layer.client = layer.client.with_history(history);
+        }
+        Ok(Self::with_layer(layer, settings_dir))
+    }
+
+    fn with_layer(layer: Layer, settings_dir: &Path) -> Self {
+        Self { layer: Arc::new(layer), legacy: settings_dir.join("assistant").join("fantastico.key"), has_key: Mutex::new(None) }
+    }
+
+    fn forget_has_key(&self) {
+        *self.has_key.lock().unwrap_or_else(PoisonError::into_inner) = None;
     }
 
     /// Check `key` with the account service before anything is stored: a mistyped key is never
@@ -99,7 +324,7 @@ impl FantasticoHost {
         if !key.starts_with("ck-fant-") {
             return Err("This is not an account key: an account key starts with ck-fant-".into());
         }
-        let client = Fantastico::new(key.clone(), Self::options()).map_err(|e| e.message)?;
+        let client = Fantastico::new(key.clone(), options()).map_err(|e| e.message)?;
         let config = client.config().map_err(|e| match e.code.as_str() {
             "INVALID_CONTO_KEY" => "FANTASTICO does not recognise this key".to_string(),
             "NETWORK_ERROR" => "FANTASTICO cannot be reached: check the internet connection".to_string(),
@@ -119,47 +344,96 @@ impl FantasticoHost {
         b.total_remaining_usd.filter(|t| t.is_finite()).unwrap_or(b.remaining_usd)
     }
 
-    fn client(&self) -> Result<Fantastico, String> {
-        Fantastico::new(self.store.load()?, Self::options()).map_err(|e| e.message)
+    fn read_legacy(&self) -> Option<String> {
+        let size = std::fs::metadata(&self.legacy).ok()?.len();
+        if size > MAX_KEY_BYTES {
+            return None;
+        }
+        let key = std::fs::read_to_string(&self.legacy).ok()?.trim().to_string();
+        (!key.is_empty()).then_some(key)
+    }
+
+    /// Move an older WordCraft's key file into the keychain, when there is one and no connection
+    /// yet. The file goes once the key is stored; with a connection already there it is left
+    /// alone, unused.
+    fn import_legacy(&self) -> Result<(), String> {
+        if !self.legacy.is_file() || self.layer.connection()?.is_some() {
+            return Ok(());
+        }
+        let Some(key) = self.read_legacy() else { return Ok(()) };
+        // The model is bound when the assistant first needs one (`provider`).
+        self.layer.save_key(&key, None)?;
+        if let Err(e) = std::fs::remove_file(&self.legacy) {
+            log::warn!("GeenioAI: the old key file could not be removed: {e}");
+        }
+        log::info!("GeenioAI: the account key moved into the system keychain");
+        self.forget_has_key();
+        Ok(())
+    }
+
+    fn connection(&self) -> Result<Connection, String> {
+        self.import_legacy()?;
+        self.layer.connection()?.ok_or_else(|| "No account key is set".to_string())
     }
 }
 
-impl AssistantHost for FantasticoHost {
+impl AssistantHost for LayerHost {
     fn service(&self) -> Service {
         Service { name: "FANTASTICO".into(), url: SITE.into(), key_prefix: "ck-fant-".into() }
     }
 
     fn has_key(&self) -> bool {
-        self.store.is_set()
+        let mut cached = self.has_key.lock().unwrap_or_else(PoisonError::into_inner);
+        if let Some((at, answer)) = *cached
+            && at.elapsed() < HAS_KEY_TTL
+        {
+            return answer;
+        }
+        let answer = self.legacy.is_file() || self.layer.connection().ok().flatten().is_some();
+        *cached = Some((Instant::now(), answer));
+        answer
     }
 
     fn connect(&self, key: String) -> Result<Account, String> {
-        if self.store.is_set() {
+        self.forget_has_key();
+        if self.has_key() {
             return Err("A key is already set on this computer".into());
         }
         let (key, account) = Self::verify(&key)?;
-        self.store.set(&key)?;
+        let id = self.layer.save_key(&key, None)?;
+        if let Err(e) = self.layer.bind(&id, &account.model) {
+            log::warn!("GeenioAI: {e}");
+        }
+        self.forget_has_key();
         Ok(account)
     }
 
     fn change_key(&self, key: String) -> Result<Account, String> {
         let (key, account) = Self::verify(&key)?;
-        self.store.replace(&key)?;
+        self.import_legacy()?;
+        let existing = self.layer.connection()?;
+        let id = self.layer.save_key(&key, existing.as_ref())?;
+        if self.layer.bound().is_none() {
+            let _ = self.layer.bind(&id, &account.model);
+        }
+        self.forget_has_key();
         Ok(account)
     }
 
+    /// The account's chat models, read again from the account and kept on the connection.
     fn models(&self) -> Result<Vec<ModelInfo>, String> {
-        let list = self.client()?.models().map_err(|e| e.message)?;
-        let price = |m: &Value| m.pointer("/pricing/completion").and_then(|p| p.as_str().and_then(|s| s.parse::<f64>().ok()).or_else(|| p.as_f64()));
-        let mut models: Vec<ModelInfo> = list
-            .iter()
-            .filter_map(|m| {
-                let id = m.get("id").and_then(Value::as_str).filter(|id| !id.is_empty() && ModelInfo::is_chat(id))?;
-                Some(ModelInfo {
-                    id: id.to_string(),
-                    name: m.get("name").and_then(Value::as_str).filter(|n| !n.is_empty()).map(str::to_string),
-                    output_usd_per_million: price(m).filter(|p| p.is_finite() && *p >= 0.0).map(|p| p * 1_000_000.0),
-                })
+        let connection = self.connection()?;
+        let report = self.layer.manager.test_saved(&connection.id, true).map_err(|e| e.message)?;
+        let mut models: Vec<ModelInfo> = report
+            .models
+            .into_iter()
+            .filter(|m| ModelInfo::is_chat(m.id.as_str()))
+            .map(|m| ModelInfo {
+                id: m.id.as_str().to_string(),
+                name: (m.label != m.id.as_str()).then(|| m.label.clone()),
+                // Millionths of a dollar per million tokens, as dollars per million tokens.
+                #[allow(clippy::cast_precision_loss)]
+                output_usd_per_million: m.pricing.and_then(|p| p.output_micros_per_mtok).map(|micros| micros as f64 / 1_000_000.0),
             })
             .collect();
         models.sort_by_key(|m| m.name.as_deref().unwrap_or(&m.id).to_lowercase());
@@ -167,63 +441,56 @@ impl AssistantHost for FantasticoHost {
     }
 
     fn account(&self) -> Option<Account> {
-        let config = self.client().ok()?.config().ok()?;
+        let connection = self.connection().ok()?;
+        let config = self.layer.account_client(&connection).ok()?.config().ok()?;
         Some(Self::account_of(config))
     }
 
-    /// The conversation's endpoint streams its replies (`wordcraft-fantastico`).
-    fn provider(&self) -> Result<(Box<dyn wordcraft_assistant::Provider + Send>, String), String> {
-        let provider = Streaming::new(self.store.load()?, Self::options()).map_err(|e| e.message)?;
-        let client = provider.client();
-        let model = match client.surface() {
-            Surface::Edge => client.config().map(|c| c.model).unwrap_or_else(|_| fantastico_sdk::DEFAULT_MODEL.to_string()),
-            Surface::Runtime => fantastico_sdk::DEFAULT_MODEL.to_string(),
-        };
-        Ok((Box::new(provider), model))
+    /// The conversation's endpoint, and the account's suggested model (the model the tool is
+    /// bound to when the account can't be read).
+    fn provider(&self) -> Result<(Box<dyn Provider + Send>, String), String> {
+        let connection = self.connection()?;
+        self.layer.ensure_some_binding()?;
+        let suggested = self.layer.account_client(&connection).ok().and_then(|c| c.config().ok()).map(|c| c.model);
+        let model = suggested
+            .or_else(|| self.layer.bound().map(|(_, m)| m.as_str().to_string()))
+            .unwrap_or_else(|| fantastico_sdk::DEFAULT_MODEL.to_string());
+        Ok((Box::new(LayerProvider { layer: self.layer.clone() }), model))
     }
 
     fn balance(&self) -> Option<f64> {
-        self.client().ok()?.balance().ok().map(|b| Self::credit(&b))
+        let connection = self.connection().ok()?;
+        self.layer.account_client(&connection).ok()?.balance().ok().map(|b| Self::credit(&b))
     }
 
     fn event(&self, event: &AssistantEvent) {
         match event {
-            AssistantEvent::KeyRegistered { conto_id } => log::info!("GeenioAI: the key of FANTASTICO account {conto_id} is now stored"),
+            AssistantEvent::KeyRegistered { conto_id } => {
+                log::info!("GeenioAI: the key of FANTASTICO account {conto_id} is now stored")
+            }
             AssistantEvent::KeyChanged { conto_id } => {
                 log::info!("GeenioAI: the stored key was replaced; it belongs to FANTASTICO account {conto_id}")
             }
         }
     }
+
+    /// Asked while WordCraft has no agreement for GeenioAI's connection. A connection that can't
+    /// be planned for asks nothing here: the turn then fails with the reason.
+    fn consent(&self) -> Option<Consent> {
+        self.connection().ok()?;
+        self.layer.ensure_some_binding().ok()?;
+        let plan = self.layer.sample_plan().ok()?;
+        plan.needs_consent(&self.layer.load_ledger())
+            .then(|| Consent { service: "FANTASTICO".into(), destination: format!("{} → {ROUTED_TO}", plan.disclosure().destination) })
+    }
+
+    fn agree(&self) -> Result<(), String> {
+        let plan = self.layer.sample_plan()?;
+        let mut ledger = self.layer.load_ledger();
+        ledger.grant(plan.disclosure());
+        self.layer.save_ledger(&ledger)
+    }
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn the_key_is_set_once_and_replaced_only_on_request() {
-        let dir = std::env::temp_dir().join(format!("wordcraft-keystore-{}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&dir);
-        let store = KeyStore::new(&dir);
-        assert!(!store.is_set());
-        assert!(store.load().is_err());
-        store.set("ck-fant-one").unwrap();
-        assert!(store.is_set());
-        assert!(store.set("ck-fant-two").is_err());
-        assert_eq!(store.load().unwrap(), "ck-fant-one");
-        // A deliberate change replaces it, leaving no stray file behind.
-        store.replace("ck-fant-two").unwrap();
-        assert_eq!(store.load().unwrap(), "ck-fant-two");
-        assert!(!dir.join("assistant").join("fantastico.key.new").exists());
-        // The host refuses a second key before calling anybody.
-        let host = FantasticoHost::new(&dir);
-        assert!(host.connect("ck-fant-two".into()).unwrap_err().contains("already set"));
-        std::fs::remove_dir_all(&dir).unwrap();
-        // And a key that isn't an account key is refused without a request.
-        let host = FantasticoHost::new(&dir);
-        assert!(host.connect("sk-or-abc".into()).is_err());
-        assert!(host.change_key("sk-or-abc".into()).is_err());
-        assert!(!dir.exists());
-        assert_eq!(host.service().key_prefix, "ck-fant-");
-    }
-}
+mod tests;

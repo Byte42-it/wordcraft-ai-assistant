@@ -2134,6 +2134,8 @@
 	Credit available: {usd} USD	可用余额：{usd} USD
 	Allow	允许
 	Decline	拒绝
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	为了回答，GeenioAI 会把你的请求、它读取的文档文本以及其命令返回的结果发送到 {service}（{destination}）。要为 WordCraft 允许吗？
+	Nothing was sent: GeenioAI needs your agreement first.	未发送任何内容：GeenioAI 需要先获得你的同意。
 	Summarize this document	总结本文档
 	Summarize this document in a few sentences.	用几句话总结本文档。
 	Suggest a title	建议标题
