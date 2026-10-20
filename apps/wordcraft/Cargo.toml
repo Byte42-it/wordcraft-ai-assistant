@@ -27,8 +27,7 @@ fantastico-sdk = { workspace = true }
 craft-ai-core = { git = "https://github.com/storytold/craft-ai-integrations", rev = "ea85917afe35afcd48a6d19a27daca0621c74db2" }
 craft-ai-client = { git = "https://github.com/storytold/craft-ai-integrations", rev = "ea85917afe35afcd48a6d19a27daca0621c74db2" }
 craft-ai-native = { git = "https://github.com/storytold/craft-ai-integrations", rev = "ea85917afe35afcd48a6d19a27daca0621c74db2" }
-# Not published yet: the sibling checkout next to this repo.
-craft-ai-fantastico = { path = "../../../craft-ai-fantastico" }
+craft-ai-fantastico = { git = "https://github.com/Byte42-it/craft-ai-fantastico", rev = "9cd0b45fe404472b76b7bdeb639541eded2db69b" }
 eframe = { workspace = true, features = ["default_fonts", "wgpu", "accesskit", "wayland", "x11", "links"] }
 egui = { workspace = true }
 serde_json = { workspace = true }
