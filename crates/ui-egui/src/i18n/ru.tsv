@@ -2521,7 +2521,7 @@ preview	Title	Пример
 	Credit available: {usd} USD	Доступный баланс: {usd} USD
 	Allow	Разрешить
 	Decline	Отклонить
-	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	Чтобы ответить, GeenioAI отправляет в {service} ({destination}) ваши запросы, текст документа, который он читает, и результаты своих команд. Разрешить это для WordCraft?
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	Чтобы ответить, GeenioAI отправляет в {service} ({destination}) и поставщику выбранной модели ваши запросы, текст документа, который он читает, и результаты своих команд. Разрешить это для WordCraft?
 	Nothing was sent: GeenioAI needs your agreement first.	Ничего не отправлено: GeenioAI сначала нужно ваше согласие.
 	Summarize this document	Кратко изложить документ
 	Summarize this document in a few sentences.	Кратко изложи этот документ в нескольких предложениях.

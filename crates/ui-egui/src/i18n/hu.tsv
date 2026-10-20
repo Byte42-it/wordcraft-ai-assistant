@@ -2520,7 +2520,7 @@
 	Credit available: {usd} USD	Elérhető egyenleg: {usd} USD
 	Allow	Engedélyezés
 	Decline	Elutasítás
-	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	A válaszhoz a GeenioAI elküldi a kéréseidet, a dokumentum általa olvasott szövegét és a parancsai eredményét ide: {service} ({destination}). Engedélyezed ezt a WordCraftnak?
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	A válaszhoz a GeenioAI elküldi a kéréseidet, a dokumentum általa olvasott szövegét és a parancsai eredményét ide: {service} ({destination}), valamint a választott modell szolgáltatójának. Engedélyezed ezt a WordCraftnak?
 	Nothing was sent: GeenioAI needs your agreement first.	Semmi sem lett elküldve: a GeenioAI-nak előbb a hozzájárulásodra van szüksége.
 	Summarize this document	A dokumentum összefoglalása
 	Summarize this document in a few sentences.	Foglald össze ezt a dokumentumot néhány mondatban.

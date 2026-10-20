@@ -184,7 +184,8 @@ pub trait AssistantHost: Send + Sync {
 pub struct Consent {
     /// The service, as the user knows it.
     pub service: String,
-    /// Where the data goes: the service's address and the model providers it routes to.
+    /// The service's address. Which provider serves the chosen model is the service's business,
+    /// so the question names none.
     pub destination: String,
 }
 
@@ -192,7 +193,7 @@ pub struct Consent {
 fn consent_text(c: &Consent) -> String {
     crate::i18n::fmt(
         tl!(
-            "To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?"
+            "To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?"
         ),
         &[("service", &c.service), ("destination", &c.destination)],
     )

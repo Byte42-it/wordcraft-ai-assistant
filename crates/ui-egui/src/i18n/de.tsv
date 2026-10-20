@@ -2121,7 +2121,7 @@
 	Credit available: {usd} USD	Verfügbares Guthaben: {usd} USD
 	Allow	Erlauben
 	Decline	Ablehnen
-	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	Um zu antworten, sendet GeenioAI deine Anfragen, den gelesenen Dokumenttext und die Ergebnisse seiner Befehle an {service} ({destination}). Für WordCraft erlauben?
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	Um zu antworten, sendet GeenioAI deine Anfragen, den gelesenen Dokumenttext und die Ergebnisse seiner Befehle an {service} ({destination}) und an den Anbieter des gewählten Modells. Für WordCraft erlauben?
 	Nothing was sent: GeenioAI needs your agreement first.	Es wurde nichts gesendet: GeenioAI braucht zuerst deine Zustimmung.
 	Summarize this document	Dieses Dokument zusammenfassen
 	Summarize this document in a few sentences.	Fasse dieses Dokument in wenigen Sätzen zusammen.

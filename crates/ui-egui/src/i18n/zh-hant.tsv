@@ -2123,7 +2123,7 @@
 	Credit available: {usd} USD	可用餘額：{usd} USD
 	Allow	允許
 	Decline	拒絕
-	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	為了回答，GeenioAI 會把你的請求、它讀取的文件文字以及其命令傳回的結果傳送到 {service}（{destination}）。要為 WordCraft 允許嗎？
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	為了回答，GeenioAI 會把你的請求、它讀取的文件文字以及其命令傳回的結果傳送到 {service}（{destination}）和所選模型的提供者。要為 WordCraft 允許嗎？
 	Nothing was sent: GeenioAI needs your agreement first.	未傳送任何內容：GeenioAI 需要先取得你的同意。
 	Summarize this document	摘要本文件
 	Summarize this document in a few sentences.	用幾句話摘要本文件。

@@ -2156,7 +2156,7 @@
 	Credit available: {usd} USD	Saadaolev krediit: {usd} USD
 	Allow	Luba
 	Decline	Keela
-	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	Vastamiseks saadab GeenioAI teenusele {service} ({destination}) sinu päringud, dokumendi teksti, mida ta loeb, ja oma käskude tulemused. Kas lubada see WordCraftile?
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	Vastamiseks saadab GeenioAI teenusele {service} ({destination}) ja valitud mudeli pakkujale sinu päringud, dokumendi teksti, mida ta loeb, ja oma käskude tulemused. Kas lubada see WordCraftile?
 	Nothing was sent: GeenioAI needs your agreement first.	Midagi ei saadetud: GeenioAI vajab kõigepealt sinu nõusolekut.
 	Summarize this document	Võta see dokument kokku
 	Summarize this document in a few sentences.	Võta see dokument mõne lausega kokku.

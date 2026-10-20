@@ -2506,7 +2506,7 @@ preview	Title	Esempio
 	Credit available: {usd} USD	Credito disponibile: {usd} USD
 	Allow	Consenti
 	Decline	Rifiuta
-	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	Per rispondere, GeenioAI invia a {service} ({destination}) le tue richieste, il testo del documento che legge e ciò che restituiscono i suoi comandi. Consentirlo per WordCraft?
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	Per rispondere, GeenioAI invia a {service} ({destination}) e al fornitore del modello scelto le tue richieste, il testo del documento che legge e ciò che restituiscono i suoi comandi. Consentirlo per WordCraft?
 	Nothing was sent: GeenioAI needs your agreement first.	Non è stato inviato nulla: GeenioAI ha prima bisogno del tuo consenso.
 	Summarize this document	Riassumi questo documento
 	Summarize this document in a few sentences.	Riassumi questo documento in poche frasi.

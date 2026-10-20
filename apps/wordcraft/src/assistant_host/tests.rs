@@ -13,7 +13,8 @@ use serde_json::json;
 use super::*;
 
 const BASE: &str = "https://fantastico.cc/api";
-const CHAT: &str = "https://openrouter.ai/api/v1/chat/completions";
+/// The model call, wherever the SDK sends it.
+const CHAT: &str = "/chat/completions";
 const MODEL: &str = "anthropic/claude-sonnet-5";
 
 /// The account service and the provider behind it, scripted. Every chat body is kept.
@@ -31,7 +32,7 @@ impl Wire for Fake {
         if req.url == format!("{BASE}/edge/key") && req.method == Method::Post {
             return Ok(reply(
                 "application/json",
-                json!({"runtimeKey": "sk-or-runtime", "expiresAt": "2099-01-01T00:00:00.000Z", "recordId": "r"}).to_string(),
+                json!({"runtimeKey": "rk-runtime", "expiresAt": "2099-01-01T00:00:00.000Z", "recordId": "r"}).to_string(),
             ));
         }
         if req.url == format!("{BASE}/edge/models") {
@@ -42,7 +43,7 @@ impl Wire for Fake {
             ]});
             return Ok(reply("application/json", models.to_string()));
         }
-        if req.url != CHAT {
+        if req.url.starts_with(BASE) || !req.url.ends_with(CHAT) {
             return Err(format!("unexpected request to {}", req.url));
         }
         let body: Value = serde_json::from_str(req.body.as_deref().unwrap_or("{}")).map_err(|e| e.to_string())?;
@@ -162,7 +163,7 @@ fn agreement_is_asked_once_and_kept() {
     connected(&s);
     let asked = s.host.consent().unwrap();
     assert_eq!(asked.service, "FANTASTICO");
-    assert!(asked.destination.contains("fantastico.cc") && asked.destination.contains(ROUTED_TO), "{}", asked.destination);
+    assert!(asked.destination.contains("fantastico.cc"), "{}", asked.destination);
     // Without it nothing is sent.
     let mut provider = LayerProvider { layer: s.host.layer.clone() };
     let refused = provider.complete(&conversation(MODEL)).unwrap_err();
@@ -235,8 +236,8 @@ fn an_older_wordcrafts_key_file_moves_into_the_keychain() {
 #[test]
 fn connect_refuses_a_second_key_and_a_wrong_one_before_any_request() {
     let s = setup("connect");
-    assert!(s.host.connect("sk-or-abc".into()).is_err());
-    assert!(s.host.change_key("sk-or-abc".into()).is_err());
+    assert!(s.host.connect("sk-other-abc".into()).is_err());
+    assert!(s.host.change_key("sk-other-abc".into()).is_err());
     assert!(s.host.layer.connection().unwrap().is_none());
     connected(&s);
     assert!(s.host.connect("ck-fant-another".into()).unwrap_err().contains("already set"));

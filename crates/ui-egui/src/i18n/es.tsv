@@ -2488,7 +2488,7 @@ preview	Title	Título
 	Credit available: {usd} USD	Crédito disponible: {usd} USD
 	Allow	Permitir
 	Decline	Rechazar
-	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}). Allow this for WordCraft?	Para responder, GeenioAI envía a {service} ({destination}) tus peticiones, el texto del documento que lee y lo que devuelven sus comandos. ¿Permitirlo para WordCraft?
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	Para responder, GeenioAI envía a {service} ({destination}) y al proveedor del modelo elegido tus peticiones, el texto del documento que lee y lo que devuelven sus comandos. ¿Permitirlo para WordCraft?
 	Nothing was sent: GeenioAI needs your agreement first.	No se ha enviado nada: GeenioAI necesita antes tu consentimiento.
 	Summarize this document	Resumir este documento
 	Summarize this document in a few sentences.	Resume este documento en pocas frases.

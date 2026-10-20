@@ -41,8 +41,6 @@ const ENDPOINT: &str = "https://fantastico.cc/api";
 const LABEL: &str = "FANTASTICO";
 /// The account service's site for WordCraft: where a key comes from and the credit is topped up.
 const SITE: &str = "https://artcraft.fantastico.cc";
-/// Where the prompts go from the account: the provider FANTASTICO's runtime keys are for.
-const ROUTED_TO: &str = "openrouter.ai";
 /// The largest key file of an older WordCraft read back (a key is under a hundred bytes).
 const MAX_KEY_BYTES: u64 = 4096;
 /// How often a running reply is polled for its next pieces.
@@ -481,7 +479,7 @@ impl AssistantHost for LayerHost {
         self.layer.ensure_some_binding().ok()?;
         let plan = self.layer.sample_plan().ok()?;
         plan.needs_consent(&self.layer.load_ledger())
-            .then(|| Consent { service: "FANTASTICO".into(), destination: format!("{} → {ROUTED_TO}", plan.disclosure().destination) })
+            .then(|| Consent { service: "FANTASTICO".into(), destination: plan.disclosure().destination.clone() })
     }
 
     fn agree(&self) -> Result<(), String> {
