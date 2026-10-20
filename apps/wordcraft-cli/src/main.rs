@@ -732,16 +732,18 @@ fn run<S: AsRef<OsStr>>(args: &[S]) -> Result<(), Failure> {
                 }
             }
             // Write what was done even when the turn stopped early: the file was asked for.
-            if let Some(p) = &a.save {
+            let saved = a.save.as_ref().map(|p| {
                 let r = if p.to_ascii_lowercase().ends_with(".png") {
                     backend.session.run("file.exportPng", &json!({"path": p}))
                 } else {
                     backend.session.run("file.save", &json!({"path": p}))
                 };
-                r.map_err(|e| e.to_string())?;
+                r.map(|_| p.clone()).map_err(|e| format!("{p}: {e}"))
+            });
+            if let Some(Ok(p)) = &saved {
                 eprintln!("wrote {p}");
             }
-            turn.map(|_| ()).map_err(|e| e.to_string().into())
+            ask_result(turn.map(|_| ()).map_err(|e| e.to_string()), saved).map_err(Into::into)
         }
         "--version" | "-V" => write_stdout(|o| writeln!(o, "wordcraft-cli {}", env!("CARGO_PKG_VERSION"))),
         "" | "help" | "--help" | "-h" => write_stdout(|o| write!(o, "{USAGE}")),
@@ -760,6 +762,20 @@ struct AskArgs {
     yes: bool,
     author: Option<String>,
     save: Option<String>,
+}
+
+/// How `ask` ended: the turn's error and the save's, both when both failed (the check before the
+/// turn can't foresee every write failure, a full disk for one).
+fn ask_result(turn: Result<(), String>, saved: Option<Result<String, String>>) -> Result<(), String> {
+    match (turn, saved) {
+        (Err(t), Some(Err(s))) => Err(format!(
+            "{t}
+and the document could not be saved: {s}"
+        )),
+        (Err(t), _) => Err(t),
+        (Ok(()), Some(Err(s))) => Err(s),
+        (Ok(()), _) => Ok(()),
+    }
 }
 
 /// The assistant's way into the document for `ask`: every file its tools read or write stays inside
@@ -995,6 +1011,17 @@ mod tests {
             .filter(|word| !word.starts_with(['-', '[']))
             .collect();
         assert_eq!(listed, SUBCOMMANDS);
+    }
+
+    /// Neither failure hides the other.
+    #[test]
+    fn ask_reports_both_the_turn_and_the_save_when_both_fail() {
+        let both = ask_result(Err("the model failed".into()), Some(Err("out.docx: disk full".into()))).unwrap_err();
+        assert!(both.contains("the model failed") && both.contains("disk full"), "{both}");
+        assert_eq!(ask_result(Err("t".into()), Some(Ok("out.docx".into()))), Err("t".into()));
+        assert_eq!(ask_result(Ok(()), Some(Err("s".into()))), Err("s".into()));
+        assert_eq!(ask_result(Ok(()), Some(Ok("out.docx".into()))), Ok(()));
+        assert_eq!(ask_result(Ok(()), None), Ok(()));
     }
 
     /// A bad output is caught before any work (`run`, and `ask` before the model is asked).
