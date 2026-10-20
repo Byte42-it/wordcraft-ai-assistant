@@ -1081,7 +1081,7 @@ dependencies = [
 [[package]]
 name = "craft-ai-fantastico"
 version = "0.1.0"
-source = "git+https://github.com/Byte42-it/craft-ai-fantastico?rev=4ebf25a3f90a669c980dd2f7d7d329ae53b3b617#4ebf25a3f90a669c980dd2f7d7d329ae53b3b617"
+source = "git+https://github.com/Byte42-it/craft-ai-fantastico?rev=497b24e2c50d9f52fd0ac5f9aba8edc0ef1bb656#497b24e2c50d9f52fd0ac5f9aba8edc0ef1bb656"
 dependencies = [
  "craft-ai-core",
  "craft-ai-http",
@@ -1326,7 +1326,7 @@ dependencies = [
  "libc",
  "option-ext",
  "redox_users",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -1656,9 +1656,9 @@ dependencies = [
 
 [[package]]
 name = "fantastico-sdk"
-version = "0.1.1"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e2aff19c2ec784cd52f4cd3ff0e79856dce695a4e73b6a8da42a89b015f65090"
+checksum = "dcd56dee603c094b5e814b9a576608652e57481b605388a2b73c6a18734fe38e"
 dependencies = [
  "serde_json",
  "ureq",
@@ -4116,7 +4116,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

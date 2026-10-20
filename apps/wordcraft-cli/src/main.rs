@@ -425,11 +425,12 @@ fn run(args: &[String]) -> Result<(), Failure> {
                 ..fantastico_sdk::Options::default()
             };
             let mut provider = wordcraft_fantastico::Streaming::new(key, opts).map_err(|e| e.message)?;
-            // The account suggests a model; a project key has none to ask for.
+            // The account suggests a model; without one (a project key, or an account that names
+            // none) the request leaves it empty and the model the key was minted for answers.
             let model = match (&a.model, provider.client().surface()) {
                 (Some(m), _) => m.clone(),
-                (None, fantastico_sdk::Surface::Edge) => provider.client().config().map_err(|e| e.message)?.model,
-                (None, fantastico_sdk::Surface::Runtime) => fantastico_sdk::DEFAULT_MODEL.to_string(),
+                (None, fantastico_sdk::Surface::Edge) => provider.client().config().map_err(|e| e.message)?.model.unwrap_or_default(),
+                (None, fantastico_sdk::Surface::Runtime) => String::new(),
             };
             let mut s = match (&a.file, &a.template) {
                 (Some(f), _) => open(f)?,

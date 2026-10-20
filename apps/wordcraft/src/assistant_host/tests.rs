@@ -32,7 +32,8 @@ impl Wire for Fake {
         if req.url == format!("{BASE}/edge/key") && req.method == Method::Post {
             return Ok(reply(
                 "application/json",
-                json!({"runtimeKey": "rk-runtime", "expiresAt": "2099-01-01T00:00:00.000Z", "recordId": "r"}).to_string(),
+                json!({"runtimeKey": "rk-runtime", "expiresAt": "2099-01-01T00:00:00.000Z", "recordId": "r", "baseUrl": "https://models.example/v1"})
+                    .to_string(),
             ));
         }
         if req.url == format!("{BASE}/edge/models") {

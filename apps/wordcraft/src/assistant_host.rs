@@ -177,9 +177,9 @@ impl Layer {
             return Ok(());
         }
         let connection = self.connection()?.ok_or("No account key is set")?;
-        let suggested = self.account_client(&connection).ok().and_then(|c| c.config().ok()).map(|c| c.model);
+        let suggested = self.account_client(&connection).ok().and_then(|c| c.config().ok()).and_then(|c| c.model);
         let first = connection.models.first().map(|m| m.id.as_str().to_string());
-        let model = suggested.or(first).unwrap_or_else(|| fantastico_sdk::DEFAULT_MODEL.to_string());
+        let model = suggested.or(first).ok_or("The account offers no models")?;
         self.bind(&connection.id, &model)
     }
 
@@ -332,7 +332,7 @@ impl LayerHost {
     }
 
     fn account_of(config: fantastico_sdk::EdgeConfig) -> Account {
-        Account { conto_id: config.account_id, model: config.model, remaining_usd: config.balance.as_ref().map(Self::credit) }
+        Account { conto_id: config.account_id, model: config.model.unwrap_or_default(), remaining_usd: config.balance.as_ref().map(Self::credit) }
     }
 
     /// The credit as the user should see it: what is left including the unspent reservations
@@ -449,10 +449,9 @@ impl AssistantHost for LayerHost {
     fn provider(&self) -> Result<(Box<dyn Provider + Send>, String), String> {
         let connection = self.connection()?;
         self.layer.ensure_some_binding()?;
-        let suggested = self.layer.account_client(&connection).ok().and_then(|c| c.config().ok()).map(|c| c.model);
-        let model = suggested
-            .or_else(|| self.layer.bound().map(|(_, m)| m.as_str().to_string()))
-            .unwrap_or_else(|| fantastico_sdk::DEFAULT_MODEL.to_string());
+        let suggested = self.layer.account_client(&connection).ok().and_then(|c| c.config().ok()).and_then(|c| c.model);
+        // `ensure_some_binding` just made sure the tool is bound to a model.
+        let model = suggested.or_else(|| self.layer.bound().map(|(_, m)| m.as_str().to_string())).ok_or("The account offers no models")?;
         Ok((Box::new(LayerProvider { layer: self.layer.clone() }), model))
     }
 

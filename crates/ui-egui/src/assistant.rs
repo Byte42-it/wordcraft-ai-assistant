@@ -1167,7 +1167,7 @@ fn settings_window(app: &mut WordApp, ctx: &egui::Context, has_key: bool) {
             if has_key {
                 ui.separator();
                 ui.label(RichText::new(tl!("Model")).font(semibold(12.5)));
-                let suggestion = match a.account.as_ref().map(|acc| acc.model.as_str()) {
+                let suggestion = match a.account.as_ref().map(|acc| acc.model.as_str()).filter(|m| !m.is_empty()) {
                     Some(m) => crate::i18n::fmt(tl!("Suggested by the account ({model})"), &[("model", m)]),
                     None => tl!("Suggested by the account").to_string(),
                 };
