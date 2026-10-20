@@ -2802,3 +2802,83 @@ template	Letter	Brev
 	More tabs	Fler flikar
 # #3013: Insert Table of Figures
 	Include label and number	Ta med etikett och nummer
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Hej! Jag är GeenioAI. Be mig skriva utkast, skriva om, sammanfatta eller formatera, så gör jag det i dokumentet med WordCrafts kommandon.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Börja med att ansluta ditt {service}-konto: klistra in kontonyckeln (den börjar med {prefix}). Nyckeln stannar på den här datorn och visas aldrig igen.
+	Get an account key or top up your credit at {site}	Skaffa en kontonyckel eller fyll på din kredit på {site}
+	GeenioAI is not available in this version yet.	GeenioAI är inte tillgänglig i den här versionen ännu.
+	Connect your account first: paste its account key in the GeenioAI pane.	Anslut ditt konto först: klistra in kontonyckeln i GeenioAI-fönstret.
+	The assistant is still working on the last request.	Assistenten arbetar fortfarande med den senaste begäran.
+	Running {command}…	Kör {command}…
+	Running commands…	Kör kommandon…
+	Writing…	Skriver…
+	Selecting text…	Markerar text…
+	Reading the document…	Läser dokumentet…
+	Looking up commands…	Söker kommandon…
+	Starting a new document…	Startar ett nytt dokument…
+	Opening a document…	Öppnar ett dokument…
+	Saving the document…	Sparar dokumentet…
+	Working…	Arbetar…
+	Checking the key…	Kontrollerar nyckeln…
+	The assistant wants to start a new document: the current one will be closed.	Assistenten vill starta ett nytt dokument: det aktuella stängs.
+	The assistant wants to open {path}.	Assistenten vill öppna {path}.
+	The assistant wants to open a document.	Assistenten vill öppna ett dokument.
+	The assistant wants to save the document to {path}.	Assistenten vill spara dokumentet som {path}.
+	The assistant wants to save the document.	Assistenten vill spara dokumentet.
+	The assistant wants to run {tool}.	Assistenten vill köra {tool}.
+	Connected to account {conto}.	Ansluten till kontot {conto}.
+	What shall we write?	Vad ska vi skriva?
+	The account key was changed: now connected to account {conto}.	Kontonyckeln ändrades: nu ansluten till kontot {conto}.
+	Declined: {tool}	Avböjt: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	Assistenten fick slut på steg för den här omgången och stannade; dokumentet behåller det som gjorts.
+	GeenioAI settings	Inställningar för GeenioAI
+	New conversation	Ny konversation
+	Refresh credit	Uppdatera kredit
+	Top up credit	Fyll på kredit
+	Credit available: {usd} USD	Tillgänglig kredit: {usd} USD
+	Allow	Tillåt
+	Decline	Avböj
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	För att svara skickar GeenioAI dina förfrågningar, dokumenttexten som den läser och det som dess kommandon returnerar till {service} ({destination}) och till leverantören av den valda modellen. Tillåta detta för WordCraft?
+	Nothing was sent: GeenioAI needs your agreement first.	Inget skickades: GeenioAI behöver ditt godkännande först.
+	Summarize this document	Sammanfatta dokumentet
+	Summarize this document in a few sentences.	Sammanfatta det här dokumentet i några meningar.
+	Suggest a title	Föreslå en rubrik
+	Suggest three possible titles for this document.	Föreslå tre möjliga rubriker för det här dokumentet.
+	Check the tone	Kontrollera tonen
+	Read this document and tell me whether its tone is consistent, and what to improve.	Läs det här dokumentet och berätta om tonen är konsekvent och vad som kan förbättras.
+	Ask GeenioAI…	Fråga GeenioAI…
+	Send	Skicka
+	Account key	Kontonyckel
+	Connect	Anslut
+	Start a new conversation? The messages so far will be cleared.	Starta en ny konversation? Meddelandena hittills rensas.
+	Keep	Behåll
+	Assistant language	Assistentens språk
+	Automatic (the language you write in)	Automatiskt (språket du skriver på)
+	The interface language ({language})	Gränssnittets språk ({language})
+	Suggested by the account ({model})	Föreslagen av kontot ({model})
+	Suggested by the account	Föreslagen av kontot
+	Search models…	Sök modeller…
+	Loading models…	Läser in modeller…
+	The models could not be loaded	Modellerna kunde inte läsas in
+	Connected account: {conto}	Anslutet konto: {conto}
+	Reading the account…	Läser kontot…
+	No account key is set	Ingen kontonyckel har angetts
+	Change account key	Byt kontonyckel
+	New account key	Ny kontonyckel
+	Change key	Byt nyckel
+	Draft with GeenioAI	Skriv utkast med GeenioAI
+	Connect your account in the GeenioAI pane to start.	Anslut ditt konto i GeenioAI-fönstret för att börja.
+	Open GeenioAI	Öppna GeenioAI
+	Describe what you'd like to write	Beskriv vad du vill skriva
+	Generate	Generera
+	Rewrite the selection	Skriv om markeringen
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Skriv om den markerade texten så att den läses bättre, med samma betydelse, språk och formatering.
+	Make it shorter	Gör den kortare
+	Make the selected text shorter, keeping its meaning, language and formatting.	Gör den markerade texten kortare, med samma betydelse, språk och formatering.
+	Fix spelling and grammar	Rätta stavning och grammatik
+	Fix the spelling and grammar of the selected text; change nothing else.	Rätta stavning och grammatik i den markerade texten; ändra inget annat.
+	Summarize the selection	Sammanfatta markeringen
+	Summarize the selected text in a few sentences, in the chat.	Sammanfatta den markerade texten i några meningar, i chatten.
+	Rewrite this paragraph	Skriv om det här stycket
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Skriv om stycket där markören står så att det läses bättre, med samma betydelse, språk och formatering.

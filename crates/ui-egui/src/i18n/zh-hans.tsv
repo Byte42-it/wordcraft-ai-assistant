@@ -2379,3 +2379,83 @@
 	More tabs	更多选项卡
 # #3013: Insert Table of Figures
 	Include label and number	包含标签和编号
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	你好！我是 GeenioAI。让我起草、改写、总结或排版，我会用 WordCraft 的命令在文档中完成。
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	首先连接你的 {service} 账户：粘贴账户密钥（以 {prefix} 开头）。密钥保存在这台电脑上，之后不会再显示。
+	Get an account key or top up your credit at {site}	在 {site} 获取账户密钥或充值
+	GeenioAI is not available in this version yet.	此版本尚不提供 GeenioAI。
+	Connect your account first: paste its account key in the GeenioAI pane.	请先连接账户：在 GeenioAI 窗格中粘贴账户密钥。
+	The assistant is still working on the last request.	助手仍在处理上一个请求。
+	Running {command}…	正在运行 {command}…
+	Running commands…	正在运行命令…
+	Writing…	正在撰写…
+	Selecting text…	正在选择文本…
+	Reading the document…	正在读取文档…
+	Looking up commands…	正在查找命令…
+	Starting a new document…	正在创建新文档…
+	Opening a document…	正在打开文档…
+	Saving the document…	正在保存文档…
+	Working…	处理中…
+	Checking the key…	正在检查密钥…
+	The assistant wants to start a new document: the current one will be closed.	助手想要创建新文档：当前文档将被关闭。
+	The assistant wants to open {path}.	助手想要打开 {path}。
+	The assistant wants to open a document.	助手想要打开一个文档。
+	The assistant wants to save the document to {path}.	助手想要将文档保存到 {path}。
+	The assistant wants to save the document.	助手想要保存文档。
+	The assistant wants to run {tool}.	助手想要运行 {tool}。
+	Connected to account {conto}.	已连接到账户 {conto}。
+	What shall we write?	我们写点什么？
+	The account key was changed: now connected to account {conto}.	账户密钥已更改：现已连接到账户 {conto}。
+	Declined: {tool}	已拒绝：{tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	助手用完了本轮的步骤并已停止；文档保留已完成的更改。
+	GeenioAI settings	GeenioAI 设置
+	New conversation	新对话
+	Refresh credit	刷新余额
+	Top up credit	充值
+	Credit available: {usd} USD	可用余额：{usd} USD
+	Allow	允许
+	Decline	拒绝
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	为了回答，GeenioAI 会把你的请求、它读取的文档文本以及其命令返回的结果发送到 {service}（{destination}）和所选模型的提供方。要为 WordCraft 允许吗？
+	Nothing was sent: GeenioAI needs your agreement first.	未发送任何内容：GeenioAI 需要先获得你的同意。
+	Summarize this document	总结本文档
+	Summarize this document in a few sentences.	用几句话总结本文档。
+	Suggest a title	建议标题
+	Suggest three possible titles for this document.	为本文档建议三个可能的标题。
+	Check the tone	检查语气
+	Read this document and tell me whether its tone is consistent, and what to improve.	阅读本文档，告诉我语气是否一致，以及有哪些可以改进之处。
+	Ask GeenioAI…	向 GeenioAI 提问…
+	Send	发送
+	Account key	账户密钥
+	Connect	连接
+	Start a new conversation? The messages so far will be cleared.	开始新对话？之前的消息将被清除。
+	Keep	保留
+	Assistant language	助手语言
+	Automatic (the language you write in)	自动（你所使用的语言）
+	The interface language ({language})	界面语言（{language}）
+	Suggested by the account ({model})	账户建议（{model}）
+	Suggested by the account	账户建议
+	Search models…	搜索模型…
+	Loading models…	正在加载模型…
+	The models could not be loaded	无法加载模型
+	Connected account: {conto}	已连接的账户：{conto}
+	Reading the account…	正在读取账户…
+	No account key is set	未设置账户密钥
+	Change account key	更改账户密钥
+	New account key	新账户密钥
+	Change key	更改密钥
+	Draft with GeenioAI	用 GeenioAI 起草
+	Connect your account in the GeenioAI pane to start.	在 GeenioAI 窗格中连接账户即可开始。
+	Open GeenioAI	打开 GeenioAI
+	Describe what you'd like to write	描述你想写的内容
+	Generate	生成
+	Rewrite the selection	改写所选内容
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	改写所选文本使其更流畅，保留原意、语言和格式。
+	Make it shorter	缩短
+	Make the selected text shorter, keeping its meaning, language and formatting.	缩短所选文本，保留原意、语言和格式。
+	Fix spelling and grammar	修正拼写和语法
+	Fix the spelling and grammar of the selected text; change nothing else.	修正所选文本的拼写和语法；其他内容不要改动。
+	Summarize the selection	总结所选内容
+	Summarize the selected text in a few sentences, in the chat.	在聊天中用几句话总结所选文本。
+	Rewrite this paragraph	改写本段
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	改写光标所在的段落使其更流畅，保留原意、语言和格式。

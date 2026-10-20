@@ -2764,3 +2764,83 @@
 	More tabs	Още раздели
 # #3013: Insert Table of Figures
 	Include label and number	Включване на етикета и номера
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Здравей! Аз съм GeenioAI. Помоли ме да напиша чернова, да пренапиша, да обобщя или да форматирам текст и ще го направя в документа с командите на WordCraft.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	За начало свържи своя акаунт в {service}: постави ключа на акаунта (започва с {prefix}). Ключът остава на този компютър и никога повече не се показва.
+	Get an account key or top up your credit at {site}	Вземи ключ на акаунт или зареди кредит на {site}
+	GeenioAI is not available in this version yet.	GeenioAI все още не е наличен в тази версия.
+	Connect your account first: paste its account key in the GeenioAI pane.	Първо свържи акаунта си: постави ключа на акаунта в панела на GeenioAI.
+	The assistant is still working on the last request.	Асистентът още работи по последната заявка.
+	Running {command}…	Изпълнява се {command}…
+	Running commands…	Изпълняват се команди…
+	Writing…	Пиша…
+	Selecting text…	Избирам текст…
+	Reading the document…	Чета документа…
+	Looking up commands…	Търся команди…
+	Starting a new document…	Създавам нов документ…
+	Opening a document…	Отварям документ…
+	Saving the document…	Запазвам документа…
+	Working…	Работя…
+	Checking the key…	Проверявам ключа…
+	The assistant wants to start a new document: the current one will be closed.	Асистентът иска да създаде нов документ: текущият ще бъде затворен.
+	The assistant wants to open {path}.	Асистентът иска да отвори {path}.
+	The assistant wants to open a document.	Асистентът иска да отвори документ.
+	The assistant wants to save the document to {path}.	Асистентът иска да запази документа в {path}.
+	The assistant wants to save the document.	Асистентът иска да запази документа.
+	The assistant wants to run {tool}.	Асистентът иска да изпълни {tool}.
+	Connected to account {conto}.	Свързан с акаунт {conto}.
+	What shall we write?	Какво ще напишем?
+	The account key was changed: now connected to account {conto}.	Ключът на акаунта е сменен: сега си свързан с акаунт {conto}.
+	Declined: {tool}	Отказано: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	Стъпките на асистента за този ход свършиха и той спря; документът запазва направеното.
+	GeenioAI settings	Настройки на GeenioAI
+	New conversation	Нов разговор
+	Refresh credit	Обнови кредита
+	Top up credit	Зареди кредит
+	Credit available: {usd} USD	Наличен кредит: {usd} USD
+	Allow	Разреши
+	Decline	Откажи
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	За да отговори, GeenioAI изпраща на {service} ({destination}) и на доставчика на избрания модел твоите заявки, текста от документа, който чете, и резултатите от командите си. Да се разреши ли това за WordCraft?
+	Nothing was sent: GeenioAI needs your agreement first.	Нищо не беше изпратено: GeenioAI първо се нуждае от твоето съгласие.
+	Summarize this document	Обобщи този документ
+	Summarize this document in a few sentences.	Обобщи този документ в няколко изречения.
+	Suggest a title	Предложи заглавие
+	Suggest three possible titles for this document.	Предложи три възможни заглавия за този документ.
+	Check the tone	Провери тона
+	Read this document and tell me whether its tone is consistent, and what to improve.	Прочети този документ и ми кажи дали тонът е последователен и какво може да се подобри.
+	Ask GeenioAI…	Попитай GeenioAI…
+	Send	Изпрати
+	Account key	Ключ на акаунта
+	Connect	Свържи
+	Start a new conversation? The messages so far will be cleared.	Да започна ли нов разговор? Досегашните съобщения ще бъдат изтрити.
+	Keep	Запази
+	Assistant language	Език на асистента
+	Automatic (the language you write in)	Автоматично (езикът, на който пишеш)
+	The interface language ({language})	Езикът на интерфейса ({language})
+	Suggested by the account ({model})	Предложен от акаунта ({model})
+	Suggested by the account	Предложен от акаунта
+	Search models…	Търсене на модели…
+	Loading models…	Зареждане на модели…
+	The models could not be loaded	Моделите не можаха да бъдат заредени
+	Connected account: {conto}	Свързан акаунт: {conto}
+	Reading the account…	Чета акаунта…
+	No account key is set	Не е зададен ключ на акаунт
+	Change account key	Смени ключа на акаунта
+	New account key	Нов ключ на акаунта
+	Change key	Смени ключа
+	Draft with GeenioAI	Чернова с GeenioAI
+	Connect your account in the GeenioAI pane to start.	За начало свържи акаунта си в панела на GeenioAI.
+	Open GeenioAI	Отвори GeenioAI
+	Describe what you'd like to write	Опиши какво искаш да напишеш
+	Generate	Създай
+	Rewrite the selection	Пренапиши избраното
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Пренапиши избрания текст така, че да се чете по-добре, като запазиш смисъла, езика и форматирането.
+	Make it shorter	Съкрати
+	Make the selected text shorter, keeping its meaning, language and formatting.	Съкрати избрания текст, като запазиш смисъла, езика и форматирането.
+	Fix spelling and grammar	Поправи правописа и граматиката
+	Fix the spelling and grammar of the selected text; change nothing else.	Поправи правописа и граматиката на избрания текст; не променяй нищо друго.
+	Summarize the selection	Обобщи избраното
+	Summarize the selected text in a few sentences, in the chat.	Обобщи избрания текст в няколко изречения, в чата.
+	Rewrite this paragraph	Пренапиши този абзац
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Пренапиши абзаца, в който е курсорът, така че да се чете по-добре, като запазиш смисъла, езика и форматирането.

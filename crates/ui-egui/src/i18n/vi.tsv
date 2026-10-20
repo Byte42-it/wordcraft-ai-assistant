@@ -2814,3 +2814,83 @@ template	Letter	Thư
 	More tabs	Các tab khác
 # #3013: Insert Table of Figures
 	Include label and number	Bao gồm nhãn và số
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Xin chào! Mình là GeenioAI. Hãy nhờ mình soạn nháp, viết lại, tóm tắt hoặc định dạng, mình sẽ làm ngay trong tài liệu bằng các lệnh của WordCraft.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Để bắt đầu, hãy kết nối tài khoản {service} của bạn: dán khóa tài khoản (bắt đầu bằng {prefix}). Khóa chỉ được lưu trên máy tính này và không bao giờ hiển thị lại.
+	Get an account key or top up your credit at {site}	Nhận khóa tài khoản hoặc nạp thêm tín dụng tại {site}
+	GeenioAI is not available in this version yet.	GeenioAI chưa có trong phiên bản này.
+	Connect your account first: paste its account key in the GeenioAI pane.	Hãy kết nối tài khoản trước: dán khóa tài khoản vào ngăn GeenioAI.
+	The assistant is still working on the last request.	Trợ lý vẫn đang xử lý yêu cầu trước.
+	Running {command}…	Đang chạy {command}…
+	Running commands…	Đang chạy lệnh…
+	Writing…	Đang viết…
+	Selecting text…	Đang chọn văn bản…
+	Reading the document…	Đang đọc tài liệu…
+	Looking up commands…	Đang tìm lệnh…
+	Starting a new document…	Đang tạo tài liệu mới…
+	Opening a document…	Đang mở tài liệu…
+	Saving the document…	Đang lưu tài liệu…
+	Working…	Đang làm việc…
+	Checking the key…	Đang kiểm tra khóa…
+	The assistant wants to start a new document: the current one will be closed.	Trợ lý muốn tạo tài liệu mới: tài liệu hiện tại sẽ bị đóng.
+	The assistant wants to open {path}.	Trợ lý muốn mở {path}.
+	The assistant wants to open a document.	Trợ lý muốn mở một tài liệu.
+	The assistant wants to save the document to {path}.	Trợ lý muốn lưu tài liệu vào {path}.
+	The assistant wants to save the document.	Trợ lý muốn lưu tài liệu.
+	The assistant wants to run {tool}.	Trợ lý muốn chạy {tool}.
+	Connected to account {conto}.	Đã kết nối với tài khoản {conto}.
+	What shall we write?	Chúng ta sẽ viết gì đây?
+	The account key was changed: now connected to account {conto}.	Đã đổi khóa tài khoản: hiện đang kết nối với tài khoản {conto}.
+	Declined: {tool}	Đã từ chối: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	Trợ lý đã dùng hết số bước cho lượt này và dừng lại; tài liệu vẫn giữ những gì đã làm.
+	GeenioAI settings	Cài đặt GeenioAI
+	New conversation	Cuộc trò chuyện mới
+	Refresh credit	Làm mới tín dụng
+	Top up credit	Nạp tín dụng
+	Credit available: {usd} USD	Tín dụng còn lại: {usd} USD
+	Allow	Cho phép
+	Decline	Từ chối
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	Để trả lời, GeenioAI gửi các yêu cầu của bạn, văn bản tài liệu mà nó đọc và kết quả các lệnh của nó tới {service} ({destination}) và tới nhà cung cấp của mô hình đã chọn. Cho phép điều này với WordCraft?
+	Nothing was sent: GeenioAI needs your agreement first.	Chưa gửi gì cả: GeenioAI cần bạn đồng ý trước.
+	Summarize this document	Tóm tắt tài liệu này
+	Summarize this document in a few sentences.	Tóm tắt tài liệu này trong vài câu.
+	Suggest a title	Gợi ý tiêu đề
+	Suggest three possible titles for this document.	Gợi ý ba tiêu đề phù hợp cho tài liệu này.
+	Check the tone	Kiểm tra giọng văn
+	Read this document and tell me whether its tone is consistent, and what to improve.	Đọc tài liệu này và cho mình biết giọng văn có nhất quán không, và nên cải thiện điều gì.
+	Ask GeenioAI…	Hỏi GeenioAI…
+	Send	Gửi
+	Account key	Khóa tài khoản
+	Connect	Kết nối
+	Start a new conversation? The messages so far will be cleared.	Bắt đầu cuộc trò chuyện mới? Các tin nhắn hiện có sẽ bị xóa.
+	Keep	Giữ lại
+	Assistant language	Ngôn ngữ của trợ lý
+	Automatic (the language you write in)	Tự động (ngôn ngữ bạn viết)
+	The interface language ({language})	Ngôn ngữ giao diện ({language})
+	Suggested by the account ({model})	Tài khoản đề xuất ({model})
+	Suggested by the account	Tài khoản đề xuất
+	Search models…	Tìm mô hình…
+	Loading models…	Đang tải mô hình…
+	The models could not be loaded	Không thể tải các mô hình
+	Connected account: {conto}	Tài khoản đã kết nối: {conto}
+	Reading the account…	Đang đọc tài khoản…
+	No account key is set	Chưa đặt khóa tài khoản
+	Change account key	Đổi khóa tài khoản
+	New account key	Khóa tài khoản mới
+	Change key	Đổi khóa
+	Draft with GeenioAI	Soạn nháp với GeenioAI
+	Connect your account in the GeenioAI pane to start.	Kết nối tài khoản trong ngăn GeenioAI để bắt đầu.
+	Open GeenioAI	Mở GeenioAI
+	Describe what you'd like to write	Mô tả nội dung bạn muốn viết
+	Generate	Tạo
+	Rewrite the selection	Viết lại phần đã chọn
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Viết lại văn bản đã chọn cho dễ đọc hơn, giữ nguyên ý nghĩa, ngôn ngữ và định dạng.
+	Make it shorter	Rút gọn
+	Make the selected text shorter, keeping its meaning, language and formatting.	Rút gọn văn bản đã chọn, giữ nguyên ý nghĩa, ngôn ngữ và định dạng.
+	Fix spelling and grammar	Sửa chính tả và ngữ pháp
+	Fix the spelling and grammar of the selected text; change nothing else.	Sửa chính tả và ngữ pháp của văn bản đã chọn; không thay đổi gì khác.
+	Summarize the selection	Tóm tắt phần đã chọn
+	Summarize the selected text in a few sentences, in the chat.	Tóm tắt văn bản đã chọn trong vài câu, trong khung trò chuyện.
+	Rewrite this paragraph	Viết lại đoạn này
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Viết lại đoạn văn chứa con trỏ cho dễ đọc hơn, giữ nguyên ý nghĩa, ngôn ngữ và định dạng.

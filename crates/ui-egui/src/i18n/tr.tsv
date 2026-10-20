@@ -2772,3 +2772,83 @@ preview	Title	Örnek
 	More tabs	Diğer sekmeler
 # #3013: Insert Table of Figures
 	Include label and number	Etiketi ve numarayı ekle
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Merhaba! Ben GeenioAI. Benden taslak yazmamı, yeniden yazmamı, özetlememi veya biçimlendirmemi iste; bunu belgede WordCraft komutlarıyla yaparım.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Başlamak için {service} hesabını bağla: hesap anahtarını yapıştır ({prefix} ile başlar). Anahtar bu bilgisayarda kalır ve bir daha gösterilmez.
+	Get an account key or top up your credit at {site}	Hesap anahtarı almak veya bakiye yüklemek için: {site}
+	GeenioAI is not available in this version yet.	GeenioAI bu sürümde henüz kullanılamıyor.
+	Connect your account first: paste its account key in the GeenioAI pane.	Önce hesabını bağla: hesap anahtarını GeenioAI bölmesine yapıştır.
+	The assistant is still working on the last request.	Asistan hâlâ son istek üzerinde çalışıyor.
+	Running {command}…	{command} çalıştırılıyor…
+	Running commands…	Komutlar çalıştırılıyor…
+	Writing…	Yazılıyor…
+	Selecting text…	Metin seçiliyor…
+	Reading the document…	Belge okunuyor…
+	Looking up commands…	Komutlar aranıyor…
+	Starting a new document…	Yeni belge oluşturuluyor…
+	Opening a document…	Belge açılıyor…
+	Saving the document…	Belge kaydediliyor…
+	Working…	Çalışıyor…
+	Checking the key…	Anahtar denetleniyor…
+	The assistant wants to start a new document: the current one will be closed.	Asistan yeni bir belge oluşturmak istiyor: geçerli belge kapatılacak.
+	The assistant wants to open {path}.	Asistan {path} dosyasını açmak istiyor.
+	The assistant wants to open a document.	Asistan bir belge açmak istiyor.
+	The assistant wants to save the document to {path}.	Asistan belgeyi {path} konumuna kaydetmek istiyor.
+	The assistant wants to save the document.	Asistan belgeyi kaydetmek istiyor.
+	The assistant wants to run {tool}.	Asistan {tool} aracını çalıştırmak istiyor.
+	Connected to account {conto}.	{conto} hesabına bağlanıldı.
+	What shall we write?	Ne yazalım?
+	The account key was changed: now connected to account {conto}.	Hesap anahtarı değiştirildi: artık {conto} hesabına bağlısın.
+	Declined: {tool}	Reddedildi: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	Asistanın bu tur için adımları tükendi ve durdu; belge yaptıklarını korur.
+	GeenioAI settings	GeenioAI ayarları
+	New conversation	Yeni sohbet
+	Refresh credit	Bakiyeyi yenile
+	Top up credit	Bakiye yükle
+	Credit available: {usd} USD	Kullanılabilir bakiye: {usd} USD
+	Allow	İzin ver
+	Decline	Reddet
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	Yanıt vermek için GeenioAI isteklerini, okuduğu belge metnini ve komutlarının sonuçlarını {service} ({destination}) hizmetine ve seçilen modelin sağlayıcısına gönderir. WordCraft için buna izin verilsin mi?
+	Nothing was sent: GeenioAI needs your agreement first.	Hiçbir şey gönderilmedi: GeenioAI önce onayına ihtiyaç duyuyor.
+	Summarize this document	Bu belgeyi özetle
+	Summarize this document in a few sentences.	Bu belgeyi birkaç cümleyle özetle.
+	Suggest a title	Başlık öner
+	Suggest three possible titles for this document.	Bu belge için üç olası başlık öner.
+	Check the tone	Üslubu denetle
+	Read this document and tell me whether its tone is consistent, and what to improve.	Bu belgeyi oku ve üslubunun tutarlı olup olmadığını, nelerin iyileştirilebileceğini söyle.
+	Ask GeenioAI…	GeenioAI'ya sor…
+	Send	Gönder
+	Account key	Hesap anahtarı
+	Connect	Bağlan
+	Start a new conversation? The messages so far will be cleared.	Yeni bir sohbet başlatılsın mı? Şimdiye kadarki iletiler silinecek.
+	Keep	Koru
+	Assistant language	Asistan dili
+	Automatic (the language you write in)	Otomatik (yazdığın dil)
+	The interface language ({language})	Arayüz dili ({language})
+	Suggested by the account ({model})	Hesabın önerisi ({model})
+	Suggested by the account	Hesabın önerisi
+	Search models…	Model ara…
+	Loading models…	Modeller yükleniyor…
+	The models could not be loaded	Modeller yüklenemedi
+	Connected account: {conto}	Bağlı hesap: {conto}
+	Reading the account…	Hesap okunuyor…
+	No account key is set	Hesap anahtarı ayarlanmamış
+	Change account key	Hesap anahtarını değiştir
+	New account key	Yeni hesap anahtarı
+	Change key	Anahtarı değiştir
+	Draft with GeenioAI	GeenioAI ile taslak yaz
+	Connect your account in the GeenioAI pane to start.	Başlamak için hesabını GeenioAI bölmesinde bağla.
+	Open GeenioAI	GeenioAI'yı aç
+	Describe what you'd like to write	Ne yazmak istediğini anlat
+	Generate	Oluştur
+	Rewrite the selection	Seçimi yeniden yaz
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Seçili metni daha akıcı olacak şekilde yeniden yaz; anlamını, dilini ve biçimlendirmesini koru.
+	Make it shorter	Kısalt
+	Make the selected text shorter, keeping its meaning, language and formatting.	Seçili metni kısalt; anlamını, dilini ve biçimlendirmesini koru.
+	Fix spelling and grammar	Yazım ve dil bilgisini düzelt
+	Fix the spelling and grammar of the selected text; change nothing else.	Seçili metnin yazımını ve dil bilgisini düzelt; başka bir şeyi değiştirme.
+	Summarize the selection	Seçimi özetle
+	Summarize the selected text in a few sentences, in the chat.	Seçili metni sohbette birkaç cümleyle özetle.
+	Rewrite this paragraph	Bu paragrafı yeniden yaz
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	İmlecin bulunduğu paragrafı daha akıcı olacak şekilde yeniden yaz; anlamını, dilini ve biçimlendirmesini koru.

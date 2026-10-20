@@ -2381,3 +2381,83 @@
 	More tabs	Још картица
 # #3013: Insert Table of Figures
 	Include label and number	Укључи ознаку и број
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Здраво! Ја сам GeenioAI. Затражи да напишем нацрт, преправим, сажмем или форматирам текст и урадићу то у документу командама WordCraft-а.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	За почетак повежи свој {service} налог: налепи његов кључ налога (почиње са {prefix}). Кључ остаје на овом рачунару и никада се више не приказује.
+	Get an account key or top up your credit at {site}	Кључ налога набави или кредит допуни на {site}
+	GeenioAI is not available in this version yet.	GeenioAI још није доступан у овој верзији.
+	Connect your account first: paste its account key in the GeenioAI pane.	Прво повежи свој налог: налепи кључ налога у окно GeenioAI.
+	The assistant is still working on the last request.	Асистент још ради на последњем захтеву.
+	Running {command}…	Извршава се {command}…
+	Running commands…	Извршавају се команде…
+	Writing…	Пишем…
+	Selecting text…	Бирам текст…
+	Reading the document…	Читам документ…
+	Looking up commands…	Тражим команде…
+	Starting a new document…	Правим нови документ…
+	Opening a document…	Отварам документ…
+	Saving the document…	Чувам документ…
+	Working…	Радим…
+	Checking the key…	Проверавам кључ…
+	The assistant wants to start a new document: the current one will be closed.	Асистент жели да направи нови документ: тренутни ће бити затворен.
+	The assistant wants to open {path}.	Асистент жели да отвори {path}.
+	The assistant wants to open a document.	Асистент жели да отвори документ.
+	The assistant wants to save the document to {path}.	Асистент жели да сачува документ у {path}.
+	The assistant wants to save the document.	Асистент жели да сачува документ.
+	The assistant wants to run {tool}.	Асистент жели да покрене {tool}.
+	Connected to account {conto}.	Повезано са налогом {conto}.
+	What shall we write?	Шта пишемо?
+	The account key was changed: now connected to account {conto}.	Кључ налога је промењен: сада је повезан налог {conto}.
+	Declined: {tool}	Одбијено: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	Асистенту су истекли кораци за овај потез и зауставио се; документ задржава што је урадио.
+	GeenioAI settings	Подешавања GeenioAI
+	New conversation	Нови разговор
+	Refresh credit	Освежи кредит
+	Top up credit	Допуни кредит
+	Credit available: {usd} USD	Доступан кредит: {usd} USD
+	Allow	Дозволи
+	Decline	Одбиј
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	Да би одговорио, GeenioAI шаље сервису {service} ({destination}) и добављачу изабраног модела твоје захтеве, текст документа који чита и резултате својих команди. Дозволити то за WordCraft?
+	Nothing was sent: GeenioAI needs your agreement first.	Ништа није послато: GeenioAI прво треба твоју сагласност.
+	Summarize this document	Сажми овај документ
+	Summarize this document in a few sentences.	Сажми овај документ у неколико реченица.
+	Suggest a title	Предложи наслов
+	Suggest three possible titles for this document.	Предложи три могућа наслова за овај документ.
+	Check the tone	Провери тон
+	Read this document and tell me whether its tone is consistent, and what to improve.	Прочитај овај документ и реци ми да ли је тон доследан и шта побољшати.
+	Ask GeenioAI…	Питај GeenioAI…
+	Send	Пошаљи
+	Account key	Кључ налога
+	Connect	Повежи
+	Start a new conversation? The messages so far will be cleared.	Започети нови разговор? Досадашње поруке биће обрисане.
+	Keep	Задржи
+	Assistant language	Језик асистента
+	Automatic (the language you write in)	Аутоматски (језик на којем пишеш)
+	The interface language ({language})	Језик интерфејса ({language})
+	Suggested by the account ({model})	Предлог налога ({model})
+	Suggested by the account	Предлог налога
+	Search models…	Претражи моделе…
+	Loading models…	Учитавам моделе…
+	The models could not be loaded	Модели нису могли да се учитају
+	Connected account: {conto}	Повезани налог: {conto}
+	Reading the account…	Читам налог…
+	No account key is set	Кључ налога није подешен
+	Change account key	Промени кључ налога
+	New account key	Нови кључ налога
+	Change key	Промени кључ
+	Draft with GeenioAI	Нацрт са GeenioAI
+	Connect your account in the GeenioAI pane to start.	За почетак повежи свој налог у окну GeenioAI.
+	Open GeenioAI	Отвори GeenioAI
+	Describe what you'd like to write	Опиши шта желиш да напишеш
+	Generate	Генериши
+	Rewrite the selection	Преправи избор
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Преправи изабрани текст тако да се боље чита, задржавајући значење, језик и форматирање.
+	Make it shorter	Скрати
+	Make the selected text shorter, keeping its meaning, language and formatting.	Скрати изабрани текст, задржавајући значење, језик и форматирање.
+	Fix spelling and grammar	Исправи правопис и граматику
+	Fix the spelling and grammar of the selected text; change nothing else.	Исправи правопис и граматику изабраног текста; ништа друго не мењај.
+	Summarize the selection	Сажми избор
+	Summarize the selected text in a few sentences, in the chat.	Сажми изабрани текст у неколико реченица, у ћаскању.
+	Rewrite this paragraph	Преправи овај пасус
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Преправи пасус у којем је курсор тако да се боље чита, задржавајући значење, језик и форматирање.

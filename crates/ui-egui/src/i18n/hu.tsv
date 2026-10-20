@@ -2770,3 +2770,83 @@
 	More tabs	További lapok
 # #3013: Insert Table of Figures
 	Include label and number	Címkével és számmal
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Szia! GeenioAI vagyok. Kérj tőlem vázlatot, átfogalmazást, összefoglalót vagy formázást, és elvégzem a dokumentumban a WordCraft parancsaival.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Először kapcsold össze a {service}-fiókodat: illeszd be a fiókkulcsát (így kezdődik: {prefix}). A kulcs ezen a gépen marad, és soha többé nem jelenik meg.
+	Get an account key or top up your credit at {site}	Fiókkulcsot a {site} oldalon szerezhetsz, és ott töltheted fel az egyenleget is
+	GeenioAI is not available in this version yet.	A GeenioAI ebben a verzióban még nem érhető el.
+	Connect your account first: paste its account key in the GeenioAI pane.	Előbb kapcsold össze a fiókodat: illeszd be a fiókkulcsot a GeenioAI ablaktáblába.
+	The assistant is still working on the last request.	Az asszisztens még az előző kérésen dolgozik.
+	Running {command}…	{command} futtatása…
+	Running commands…	Parancsok futtatása…
+	Writing…	Írás…
+	Selecting text…	Szöveg kijelölése…
+	Reading the document…	A dokumentum olvasása…
+	Looking up commands…	Parancsok keresése…
+	Starting a new document…	Új dokumentum létrehozása…
+	Opening a document…	Dokumentum megnyitása…
+	Saving the document…	A dokumentum mentése…
+	Working…	Dolgozom…
+	Checking the key…	A kulcs ellenőrzése…
+	The assistant wants to start a new document: the current one will be closed.	Az asszisztens új dokumentumot akar létrehozni: a jelenlegi bezárul.
+	The assistant wants to open {path}.	Az asszisztens meg akarja nyitni ezt: {path}.
+	The assistant wants to open a document.	Az asszisztens meg akar nyitni egy dokumentumot.
+	The assistant wants to save the document to {path}.	Az asszisztens ide akarja menteni a dokumentumot: {path}.
+	The assistant wants to save the document.	Az asszisztens menteni akarja a dokumentumot.
+	The assistant wants to run {tool}.	Az asszisztens futtatni akarja ezt: {tool}.
+	Connected to account {conto}.	Kapcsolódva a(z) {conto} fiókhoz.
+	What shall we write?	Mit írjunk?
+	The account key was changed: now connected to account {conto}.	A fiókkulcs megváltozott: most a(z) {conto} fiókhoz kapcsolódsz.
+	Declined: {tool}	Elutasítva: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	Az asszisztensnek elfogytak a lépései ebben a körben, ezért megállt; a dokumentum megtartja, amit elvégzett.
+	GeenioAI settings	GeenioAI beállításai
+	New conversation	Új beszélgetés
+	Refresh credit	Egyenleg frissítése
+	Top up credit	Egyenleg feltöltése
+	Credit available: {usd} USD	Elérhető egyenleg: {usd} USD
+	Allow	Engedélyezés
+	Decline	Elutasítás
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	A válaszhoz a GeenioAI elküldi a kéréseidet, a dokumentum általa olvasott szövegét és a parancsai eredményét ide: {service} ({destination}), valamint a választott modell szolgáltatójának. Engedélyezed ezt a WordCraftnak?
+	Nothing was sent: GeenioAI needs your agreement first.	Semmi sem lett elküldve: a GeenioAI-nak előbb a hozzájárulásodra van szüksége.
+	Summarize this document	A dokumentum összefoglalása
+	Summarize this document in a few sentences.	Foglald össze ezt a dokumentumot néhány mondatban.
+	Suggest a title	Cím javaslata
+	Suggest three possible titles for this document.	Javasolj három lehetséges címet ehhez a dokumentumhoz.
+	Check the tone	A hangnem ellenőrzése
+	Read this document and tell me whether its tone is consistent, and what to improve.	Olvasd el ezt a dokumentumot, és mondd meg, egységes-e a hangneme, és min lehetne javítani.
+	Ask GeenioAI…	Kérdezd a GeenioAI-t…
+	Send	Küldés
+	Account key	Fiókkulcs
+	Connect	Összekapcsolás
+	Start a new conversation? The messages so far will be cleared.	Új beszélgetést kezdesz? Az eddigi üzenetek törlődnek.
+	Keep	Megtartás
+	Assistant language	Az asszisztens nyelve
+	Automatic (the language you write in)	Automatikus (amilyen nyelven írsz)
+	The interface language ({language})	A felület nyelve ({language})
+	Suggested by the account ({model})	A fiók javaslata ({model})
+	Suggested by the account	A fiók javaslata
+	Search models…	Modellek keresése…
+	Loading models…	Modellek betöltése…
+	The models could not be loaded	A modelleket nem sikerült betölteni
+	Connected account: {conto}	Összekapcsolt fiók: {conto}
+	Reading the account…	A fiók olvasása…
+	No account key is set	Nincs megadva fiókkulcs
+	Change account key	Fiókkulcs módosítása
+	New account key	Új fiókkulcs
+	Change key	Kulcs módosítása
+	Draft with GeenioAI	Vázlat a GeenioAI-val
+	Connect your account in the GeenioAI pane to start.	A kezdéshez kapcsold össze a fiókodat a GeenioAI ablaktáblában.
+	Open GeenioAI	A GeenioAI megnyitása
+	Describe what you'd like to write	Írd le, mit szeretnél megírni
+	Generate	Létrehozás
+	Rewrite the selection	A kijelölés átfogalmazása
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Fogalmazd át a kijelölt szöveget, hogy jobban olvasható legyen; tartsd meg a jelentését, a nyelvét és a formázását.
+	Make it shorter	Rövidítés
+	Make the selected text shorter, keeping its meaning, language and formatting.	Rövidítsd le a kijelölt szöveget; tartsd meg a jelentését, a nyelvét és a formázását.
+	Fix spelling and grammar	Helyesírás és nyelvtan javítása
+	Fix the spelling and grammar of the selected text; change nothing else.	Javítsd a kijelölt szöveg helyesírását és nyelvtanát; máson ne változtass.
+	Summarize the selection	A kijelölés összefoglalása
+	Summarize the selected text in a few sentences, in the chat.	Foglald össze a kijelölt szöveget néhány mondatban, a csevegésben.
+	Rewrite this paragraph	A bekezdés átfogalmazása
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Fogalmazd át a kurzor bekezdését, hogy jobban olvasható legyen; tartsd meg a jelentését, a nyelvét és a formázását.
