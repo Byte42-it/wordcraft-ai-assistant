@@ -467,9 +467,16 @@ struct UiBackend {
 impl Backend for UiBackend {
     fn call(&mut self, method: &str, params: Value) -> Result<Value, String> {
         let (req, rx) = ControlRequest::new(method, params);
+        let handle = req.give_up_handle();
         self.tx.send(req).map_err(|_| "WordCraft is closing".to_string())?;
         self.ctx.request_repaint();
-        let v = rx.recv_timeout(TOOL_TIMEOUT).map_err(|_| "WordCraft did not answer in time".to_string())?;
+        let v = match rx.recv_timeout(TOOL_TIMEOUT) {
+            Ok(v) => v,
+            // Given up before it ran: it never will, so the failure the model hears is true.
+            Err(_) if handle.give_up() => return Err("WordCraft did not answer in time".to_string()),
+            // It is running on the UI thread: its answer, and what it changed, are on the way.
+            Err(_) => rx.recv().map_err(|_| "WordCraft is closing".to_string())?,
+        };
         if v.get("ok").and_then(Value::as_bool) == Some(true) {
             Ok(v.get("result").cloned().unwrap_or(Value::Null))
         } else {
@@ -815,6 +822,11 @@ fn request_models(a: &mut Assistant, ctx: &egui::Context) {
 pub fn tick(app: &mut WordApp, ctx: &egui::Context) {
     if let Some(rx) = app.assistant.tools_rx.take() {
         while let Ok(req) = rx.try_recv() {
+            // A request its sender gave up on was reported as failed: running it now would change
+            // the document behind the model's back.
+            if !req.take() {
+                continue;
+            }
             // One turn is one undo step: from the second change on, the command joins the step
             // the turn's first change made.
             match app.assistant.turn_undo_depth {

@@ -588,3 +588,26 @@ fn a_model_chosen_during_a_turn_applies_when_it_returns() {
     pump(&mut app, &ctx);
     assert!(app.assistant.conversation.is_none(), "the next turn asks the account again");
 }
+
+/// A tool request the agent gave up on (no answer in time) never runs later; one the UI thread
+/// already took can no longer be given up on, so its answer is waited for.
+#[test]
+fn a_tool_request_given_up_on_never_runs_later() {
+    let mut app = app_with(FakeHost::with_key(vec![]));
+    let ctx = egui::Context::default();
+    let insert = json!({"command": "text.insert", "params": {"text": "late"}});
+    let (req, answer) = ControlRequest::new("engine.execute", insert.clone());
+    assert!(req.give_up_handle().give_up());
+    app.assistant.tools_tx.send(req).unwrap();
+    tick(&mut app, &ctx);
+    assert_eq!(text(&app), "", "the document is untouched");
+    assert!(answer.try_recv().is_err());
+
+    let (req, answer) = ControlRequest::new("engine.execute", insert);
+    let handle = req.give_up_handle();
+    app.assistant.tools_tx.send(req).unwrap();
+    tick(&mut app, &ctx);
+    assert_eq!(text(&app), "late");
+    assert!(!handle.give_up(), "taken, so too late to give up");
+    assert_eq!(answer.try_recv().unwrap()["ok"], true);
+}
