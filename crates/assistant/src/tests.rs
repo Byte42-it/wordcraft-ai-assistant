@@ -143,6 +143,45 @@ fn the_conversation_carries_over_to_the_next_turn() {
     assert_eq!(agent.messages().len(), 3);
 }
 
+/// `execute` and `batch` are no way around the confirmation, and the interface's own commands
+/// are not the assistant's.
+#[test]
+fn file_commands_through_execute_or_batch_ask_and_ui_commands_are_refused() {
+    let dir = std::env::temp_dir().join(format!("wordcraft-assistant-exec-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("via-execute.docx");
+    let path_s = path.to_string_lossy().to_string();
+    let save = json!({"command": "file.saveAs", "params": {"path": path_s}});
+    let calls = [
+        ("a", "execute", save.clone()),
+        ("b", "batch", json!({"commands": [{"command": "format.bold"}, save]})),
+        ("c", "execute", json!({"command": " ui.assistant.ask ", "params": {"prompt": "again"}})),
+        ("d", "batch", json!({"commands": [{"command": "format.bold"}, {"command": "caret.docEnd"}]})),
+    ];
+    let mut log = Log::default();
+    let mut p = Scripted::new([tool_reply(&calls), text_reply("ok")]);
+    Agent::new(Config::new("m")).send(&mut p, &mut Headless::default(), "save it", &mut log).unwrap();
+    // Asked for both file commands, declined both: nothing written. Plain edits ask nothing.
+    assert_eq!(log.asked, ["execute", "batch"]);
+    assert!(!path.exists());
+    // The interface command never runs: an error result, not a question.
+    assert!(log.events.contains(&"result execute false".to_string()), "{:?}", log.events);
+    let results: Vec<String> = p.requests[1]["messages"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|m| m["role"] == "tool")
+        .map(|m| m["content"].as_str().unwrap_or("").to_string())
+        .collect();
+    assert!(results[2].contains("interface command"), "{results:?}");
+    // With a yes the file command runs.
+    let mut log = Log { yes: true, ..Log::default() };
+    let mut p = Scripted::new([tool_reply(&calls[..1]), text_reply("ok")]);
+    Agent::new(Config::new("m")).send(&mut p, &mut Headless::default(), "save it", &mut log).unwrap();
+    assert!(path.exists(), "{:?}", log.events);
+    std::fs::remove_dir_all(&dir).ok();
+}
+
 #[test]
 fn tools_that_replace_the_document_or_write_files_need_confirmation() {
     let dir = std::env::temp_dir().join(format!("wordcraft-assistant-{}", std::process::id()));

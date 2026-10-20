@@ -234,6 +234,24 @@ fn an_older_wordcrafts_key_file_moves_into_the_keychain() {
     assert_eq!(s.host.connection().unwrap().id, c.id);
 }
 
+/// An older key file never outlives a connection, and never blocks a checked new key.
+#[test]
+fn an_older_key_file_goes_once_a_connection_exists_and_does_not_block_a_new_key() {
+    let s = setup("legacy-stale");
+    let file = s.dir.join("assistant").join("fantastico.key");
+    std::fs::create_dir_all(file.parent().unwrap()).unwrap();
+    std::fs::write(&file, "ck-fant-old-key").unwrap();
+    // With only the old file there, connect goes on to check the new key (and refuses this one
+    // for its shape, before any request), instead of saying a key is already set.
+    let e = s.host.connect("sk-other-abc".into()).unwrap_err();
+    assert!(!e.contains("already set"), "{e}");
+    // A connection made elsewhere: the old file is an unused plain-text copy and goes.
+    connected(&s);
+    let c = s.host.connection().unwrap();
+    assert!(!file.exists());
+    assert_eq!(s.host.layer.key(&c).unwrap(), "ck-fant-test-key", "the stored key is kept");
+}
+
 #[test]
 fn connect_refuses_a_second_key_and_a_wrong_one_before_any_request() {
     let s = setup("connect");

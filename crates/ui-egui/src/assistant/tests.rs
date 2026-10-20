@@ -550,3 +550,41 @@ fn the_margin_icon_follows_the_caret_and_stays_inside_the_canvas() {
     assert!(line.min.y >= canvas.min.y && r.min.y < line.max.y && r.max.y > line.min.y);
     drop(ctx);
 }
+
+/// A file command through `execute` or `batch` asks in words: the command and the file, never JSON.
+#[test]
+fn the_card_for_a_file_command_names_the_command_and_the_file() {
+    let app = app_with(FakeHost::with_key(vec![]));
+    let r = &app.session.registry;
+    let save = confirm_text(r, "execute", &json!({"command": "file.saveAs", "params": {"path": "/tmp/out.docx"}}));
+    assert!(save.contains("/tmp/out.docx") && !save.contains('{'), "{save}");
+    let open = confirm_text(r, "execute", &json!({"command": "file.open", "params": {"path": "/tmp/in.docx"}}));
+    assert!(open.contains("/tmp/in.docx"), "{open}");
+    let batch = confirm_text(r, "batch", &json!({"commands": [{"command": "format.bold"}, {"command": "file.saveAs"}]}));
+    assert!(batch.contains("Save As") && !batch.contains("Bold") && !batch.contains("file."), "{batch}");
+    let unknown = confirm_text(r, "execute", &json!({"command": "file.nothing"}));
+    assert!(unknown.contains("file.nothing"), "{unknown}");
+}
+
+/// A model chosen while a turn runs is the one the next turn uses; going back to the suggestion
+/// during a turn starts the next one afresh.
+#[test]
+fn a_model_chosen_during_a_turn_applies_when_it_returns() {
+    let host = FakeHost::with_key(vec![text_reply("uno"), text_reply("due")]);
+    let mut app = app_with(host);
+    let ctx = egui::Context::default();
+    app.run("ui.assistant", json!({})).unwrap();
+    app.assistant.input = "ciao".into();
+    send(&mut app, &ctx);
+    assert!(app.assistant.busy);
+    app.assistant.set_model(Some("b/two".into()));
+    pump(&mut app, &ctx);
+    let model = app.assistant.conversation.as_ref().map(|c| c.agent.config().model.clone());
+    assert_eq!(model.as_deref(), Some("b/two"));
+
+    app.assistant.input = "ancora".into();
+    send(&mut app, &ctx);
+    app.assistant.set_model(None);
+    pump(&mut app, &ctx);
+    assert!(app.assistant.conversation.is_none(), "the next turn asks the account again");
+}

@@ -53,7 +53,8 @@ USAGE:
                                               addNote, refresh, removeCodes, setDocPrefs
                                               (--cmd runs first, e.g. --cmd caret.docEnd)
   wordcraft-cli ask \"PROMPT\" [--file F | --template T] [--model M] [--max-steps N] [--yes]
-                    [--author NAME] [--save OUT] GeenioAI (the AI assistant) carries out PROMPT on the document
+                    [--author NAME] [--save OUT] [--automation-read-root DIR] [--automation-write-root DIR]
+                                              GeenioAI (the AI assistant) carries out PROMPT on the document
                                               (draft, rewrite, summarize…) with WordCraft's commands,
                                               through a FANTASTICO account:
                                                 $FANTASTICO_KEY   the account key (ck-fant-…) or
@@ -61,7 +62,10 @@ USAGE:
                                                                   top up, at https://artcraft.fantastico.cc
                                               --yes lets it start a new document, open and save files
                                               without asking; --save writes the result (format from
-                                              the extension); the reply goes to stdout
+                                              the extension); the reply goes to stdout. The assistant
+                                              reads and writes no file of its own unless the
+                                              --automation-read-root / --automation-write-root folders
+                                              allow it (as for mcp); --file and --save are not limited
   wordcraft-cli [<command>] -h | --help       this help
   wordcraft-cli --version
 
@@ -172,6 +176,22 @@ fn positionals<'a>(args: &'a [String], specs: &[OptionSpec]) -> Vec<&'a String> 
 
 /// A headless session in the system region: every way the CLI starts one gives `file.new` the
 /// same paper (#1381).
+/// Whether `out` can be written: its folder exists, it isn't a folder, and the document can take
+/// its format. Checked before any work, so a bad output path costs nothing.
+fn check_output(out: &str, doc: &wordcraft_doc::Document) -> Result<(), String> {
+    let parent = Path::new(out).parent().filter(|p| !p.as_os_str().is_empty());
+    if let Some(p) = parent.filter(|p| !p.is_dir()) {
+        return Err(format!("{out}: folder {} does not exist", p.display()));
+    }
+    if Path::new(out).is_dir() {
+        return Err(format!("{out}: is a folder, not a file"));
+    }
+    if !out.to_ascii_lowercase().ends_with(".png") {
+        wordcraft_engine::io::save_bytes(out, doc)?;
+    }
+    Ok(())
+}
+
 fn session(doc: wordcraft_doc::Document) -> Session {
     let mut s = Session::new(doc);
     s.system_region = system_region();
@@ -530,16 +550,7 @@ fn run<S: AsRef<OsStr>>(args: &[S]) -> Result<(), Failure> {
             let outputs: Vec<String> = script.iter().flat_map(|c| c.save.iter().cloned()).chain(arg_value(&rest, "--save")).collect();
             // Check every output can be made before writing any, so a bad one leaves no half-done job.
             for out in &outputs {
-                let parent = Path::new(out).parent().filter(|p| !p.as_os_str().is_empty());
-                if let Some(p) = parent.filter(|p| !p.is_dir()) {
-                    return Err(format!("{out}: folder {} does not exist", p.display()).into());
-                }
-                if Path::new(out).is_dir() {
-                    return Err(format!("{out}: is a folder, not a file").into());
-                }
-                if !out.to_ascii_lowercase().ends_with(".png") {
-                    wordcraft_engine::io::save_bytes(out, &s.doc)?;
-                }
+                check_output(out, &s.doc)?;
             }
             for out in outputs {
                 let r = if out.to_ascii_lowercase().ends_with(".png") {
@@ -669,6 +680,7 @@ fn run<S: AsRef<OsStr>>(args: &[S]) -> Result<(), Failure> {
             Ok(())
         }
         "ask" => {
+            let (roots, rest) = automation_roots("ask", &rest)?;
             validate_options("ask", &rest, ASK_OPTIONS)?;
             let a = parse_ask_args(&rest)?;
             let key = std::env::var("FANTASTICO_KEY").ok().filter(|v| !v.trim().is_empty()).ok_or("ask needs a FANTASTICO key in $FANTASTICO_KEY")?;
@@ -688,16 +700,20 @@ fn run<S: AsRef<OsStr>>(args: &[S]) -> Result<(), Failure> {
             let mut s = match (&a.file, &a.template) {
                 (Some(f), _) => open(f, password_from(&rest)?.as_deref())?,
                 (None, Some(t)) => {
-                    let mut s = Session::new(wordcraft_doc::Document::new());
+                    let mut s = session(wordcraft_doc::Document::new());
                     s.run("file.new", &json!({"template": t})).map_err(|e| e.to_string())?;
                     s
                 }
-                _ => Session::new(wordcraft_doc::Document::new()),
+                _ => session(wordcraft_doc::Document::new()),
             };
             if let Some(name) = &a.author {
                 set_author(&mut s, name)?;
             }
-            let mut backend = wordcraft_mcp::Headless::default();
+            // Before the model is asked (and paid): an output that can't be written fails now.
+            if let Some(out) = &a.save {
+                check_output(out, &s.doc)?;
+            }
+            let mut backend = ask_backend(roots);
             backend.session = s;
             let mut config = wordcraft_assistant::Config::new(model);
             if let Some(n) = a.max_steps {
@@ -744,6 +760,13 @@ struct AskArgs {
     yes: bool,
     author: Option<String>,
     save: Option<String>,
+}
+
+/// The assistant's way into the document for `ask`: every file its tools read or write stays inside
+/// `roots`, and with none given it may touch no file. `--file` and `--save` are the CLI's own.
+fn ask_backend(roots: Option<std::sync::Arc<wordcraft_engine::file_access::AutomationRoots>>) -> wordcraft_mcp::Headless {
+    let roots = roots.unwrap_or_else(wordcraft_engine::file_access::AutomationRoots::none);
+    wordcraft_mcp::Headless::default().with_automation_roots(Some(roots))
 }
 
 fn parse_ask_args(rest: &[String]) -> Result<AskArgs, String> {
@@ -972,6 +995,43 @@ mod tests {
             .filter(|word| !word.starts_with(['-', '[']))
             .collect();
         assert_eq!(listed, SUBCOMMANDS);
+    }
+
+    /// A bad output is caught before any work (`run`, and `ask` before the model is asked).
+    #[test]
+    fn outputs_are_checked_before_the_work() {
+        let doc = wordcraft_doc::Document::new();
+        let dir = std::env::temp_dir();
+        let e = check_output(&dir.join("no-such-folder-wc").join("out.docx").to_string_lossy(), &doc).unwrap_err();
+        assert!(e.contains("does not exist"), "{e}");
+        assert!(check_output(&dir.to_string_lossy(), &doc).unwrap_err().contains("folder"));
+        assert!(check_output(&dir.join("out.nosuchformat").to_string_lossy(), &doc).is_err());
+        assert!(check_output(&dir.join("out.docx").to_string_lossy(), &doc).is_ok());
+        assert!(check_output(&dir.join("out.png").to_string_lossy(), &doc).is_ok());
+    }
+
+    /// `ask`'s assistant reaches no file without a root, and only the root's files with one.
+    #[test]
+    fn the_ask_assistant_touches_no_file_outside_its_roots() {
+        use wordcraft_mcp::Backend;
+        let dir = std::env::temp_dir().join(format!("wordcraft-cli-ask-roots-{}", std::process::id()));
+        let inside = dir.join("in");
+        std::fs::create_dir_all(&inside).unwrap();
+        let mut doc = Session::new(wordcraft_doc::Document::new());
+        doc.run("text.insert", &json!({"text": "hi"})).unwrap();
+        let file = inside.join("a.txt");
+        doc.run("file.save", &json!({"path": file.to_string_lossy()})).unwrap();
+        let open = json!({"command": "file.open", "params": {"path": file.to_string_lossy()}});
+        let e = ask_backend(None).call("engine.execute", open.clone()).unwrap_err();
+        assert!(e.contains("not granted"), "{e}");
+        let save = json!({"command": "file.save", "params": {"path": dir.join("out.txt").to_string_lossy()}});
+        assert!(ask_backend(None).call("engine.execute", save.clone()).is_err());
+        let (roots, left) = automation_roots("ask", &args(&["p", "--automation-read-root", &inside.to_string_lossy()])).unwrap();
+        assert_eq!(left, ["p"]);
+        let mut confined = ask_backend(roots);
+        assert!(confined.call("engine.execute", open).is_ok());
+        assert!(confined.call("engine.execute", save).is_err(), "no write root, no writing");
+        std::fs::remove_dir_all(&dir).ok();
     }
 
     #[test]

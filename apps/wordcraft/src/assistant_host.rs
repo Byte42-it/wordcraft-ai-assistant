@@ -355,18 +355,31 @@ impl LayerHost {
     /// yet. The file goes once the key is stored; with a connection already there it is left
     /// alone, unused.
     fn import_legacy(&self) -> Result<(), String> {
-        if !self.legacy.is_file() || self.layer.connection()?.is_some() {
+        if !self.legacy.is_file() {
+            return Ok(());
+        }
+        // A connection is there already (made here, in the launcher or in another app): the old
+        // file is an unused copy of a key in plain text, so it goes.
+        if self.layer.connection()?.is_some() {
+            self.drop_legacy();
             return Ok(());
         }
         let Some(key) = self.read_legacy() else { return Ok(()) };
         // The model is bound when the assistant first needs one (`provider`).
         self.layer.save_key(&key, None)?;
-        if let Err(e) = std::fs::remove_file(&self.legacy) {
-            log::warn!("GeenioAI: the old key file could not be removed: {e}");
-        }
+        self.drop_legacy();
         log::info!("GeenioAI: the account key moved into the system keychain");
         self.forget_has_key();
         Ok(())
+    }
+
+    /// Remove an older WordCraft's key file, once the key in use is stored in the keychain.
+    fn drop_legacy(&self) {
+        if self.legacy.is_file()
+            && let Err(e) = std::fs::remove_file(&self.legacy)
+        {
+            log::warn!("GeenioAI: the old key file could not be removed: {e}");
+        }
     }
 
     fn connection(&self) -> Result<Connection, String> {
@@ -394,11 +407,13 @@ impl AssistantHost for LayerHost {
 
     fn connect(&self, key: String) -> Result<Account, String> {
         self.forget_has_key();
-        if self.has_key() {
+        // Only a stored connection counts: an older key file is replaced by a checked new key.
+        if self.layer.connection()?.is_some() {
             return Err("A key is already set on this computer".into());
         }
         let (key, account) = Self::verify(&key)?;
         let id = self.layer.save_key(&key, None)?;
+        self.drop_legacy();
         if let Err(e) = self.layer.bind(&id, &account.model) {
             log::warn!("GeenioAI: {e}");
         }
@@ -408,9 +423,10 @@ impl AssistantHost for LayerHost {
 
     fn change_key(&self, key: String) -> Result<Account, String> {
         let (key, account) = Self::verify(&key)?;
-        self.import_legacy()?;
+        // The checked new key replaces whatever was there, an older key file included.
         let existing = self.layer.connection()?;
         let id = self.layer.save_key(&key, existing.as_ref())?;
+        self.drop_legacy();
         if self.layer.bound().is_none() {
             let _ = self.layer.bind(&id, &account.model);
         }

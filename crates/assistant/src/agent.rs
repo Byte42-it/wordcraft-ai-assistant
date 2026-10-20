@@ -43,6 +43,30 @@ const TOOLS: &[&str] = &[
 /// Tools that replace the document or write files: they run only when the user confirms.
 const CONFIRM: &[&str] = &["new_document", "open_document", "save_document"];
 
+/// The command ids an `execute` or `batch` call runs.
+fn command_ids<'a>(name: &str, args: &'a Value) -> Vec<&'a str> {
+    match name {
+        "execute" => args.get("command").and_then(Value::as_str).into_iter().collect(),
+        "batch" => {
+            args.get("commands").and_then(Value::as_array).into_iter().flatten().filter_map(|c| c.get("command").and_then(Value::as_str)).collect()
+        }
+        _ => Vec::new(),
+    }
+}
+
+/// Whether the call needs the user's yes: a confirmed tool, or a `file.*` command (open, save,
+/// export…) through `execute` or `batch`, which would otherwise get past the confirmation.
+pub(crate) fn needs_confirmation(name: &str, args: &Value) -> bool {
+    CONFIRM.contains(&name) || command_ids(name, args).iter().any(|c| c.trim().starts_with("file."))
+}
+
+/// Why the call is refused outright: the interface's own commands (`ui.*`) are not the assistant's
+/// to run (they could open the pane again, or change the user's settings).
+fn refused(name: &str, args: &Value) -> Option<String> {
+    let id = command_ids(name, args).into_iter().find(|c| c.trim().starts_with("ui."))?;
+    Some(format!("error: `{}` is an interface command; the assistant can't run it", id.trim()))
+}
+
 const SYSTEM: &str = "You are GeenioAI, the writing assistant inside WordCraft, a word processor that works like Microsoft Word. \
 You help the user write and edit the open document with your tools: draft text, rewrite, shorten, expand, summarize, \
 fix spelling and grammar, format, and answer questions about the document.\n\
@@ -370,7 +394,12 @@ fn run_tool(backend: &mut dyn Backend, call: &Call, observer: &mut dyn Observer)
         Ok(args) if !args.is_object() => (false, "error: the arguments must be a JSON object".to_string()),
         Ok(args) => {
             observer.event(Event::ToolCall { name, arguments: args });
-            if CONFIRM.contains(&name) && !observer.confirm(name, args) {
+            if let Some(e) = refused(name, args) {
+                let text = truncate(&e, MAX_RESULT_CHARS);
+                observer.event(Event::ToolResult { name, ok: false, text: &text });
+                return text;
+            }
+            if needs_confirmation(name, args) && !observer.confirm(name, args) {
                 observer.event(Event::Declined { name });
                 return format!("The user declined `{name}`. Don't retry it; ask the user what they want instead.");
             }

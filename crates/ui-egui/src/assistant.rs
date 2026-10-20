@@ -322,6 +322,9 @@ pub struct Assistant {
     /// The model chosen in the settings, kept in the preferences; `None` follows the account's
     /// suggestion.
     pub model: Option<String>,
+    /// The model went back to the suggestion while a turn had the conversation: drop it when the
+    /// turn returns, so the next one asks the account again.
+    drop_conversation_after_turn: bool,
     settings: Settings,
     updates_tx: Sender<Update>,
     updates_rx: Option<Receiver<Update>>,
@@ -354,6 +357,7 @@ impl Default for Assistant {
             turn_undo_depth: None,
             language: Language::default(),
             model: None,
+            drop_conversation_after_turn: false,
             settings: Settings::default(),
             updates_tx,
             updates_rx: Some(updates_rx),
@@ -394,9 +398,11 @@ impl Assistant {
         if let (Some(m), Some(c)) = (&model, &mut self.conversation) {
             c.agent.set_model(m.clone());
         }
-        // Back to the suggestion: the next conversation asks the account again.
+        // Back to the suggestion: the next conversation asks the account again. During a turn the
+        // worker has the conversation; it is dropped when the turn hands it back.
         if model.is_none() && self.model.is_some() {
             self.conversation = None;
+            self.drop_conversation_after_turn = self.busy;
         }
         self.model = model;
     }
@@ -526,8 +532,38 @@ fn describe(registry: &wordcraft_engine::Registry, name: &str, args: &Value) -> 
 }
 
 /// The question a confirmation card asks, in words: what the tool does and the file it touches.
-fn confirm_text(name: &str, args: &Value) -> String {
-    let path = args.get("path").and_then(Value::as_str).map(|p| clip(p.trim(), 200)).filter(|p| !p.is_empty());
+fn confirm_text(registry: &wordcraft_engine::Registry, name: &str, args: &Value) -> String {
+    let path_in = |v: &Value| v.get("path").and_then(Value::as_str).map(|p| clip(p.trim(), 200)).filter(|p| !p.is_empty());
+    let label = |id: &str| command_label(registry, id).unwrap_or_else(|| clip(id.trim(), 60));
+    match name {
+        // A file command through `execute`: the command, and the file it touches.
+        "execute" => {
+            let id = args.get("command").and_then(Value::as_str).unwrap_or("").trim();
+            let path = args.get("params").and_then(path_in);
+            return match path {
+                Some(p) if id == "file.open" => crate::i18n::fmt(tl!("The assistant wants to open {path}."), &[("path", &p)]),
+                Some(p) if id.starts_with("file.save") || id.starts_with("file.export") => {
+                    crate::i18n::fmt(tl!("The assistant wants to save the document to {path}."), &[("path", &p)])
+                }
+                _ => crate::i18n::fmt(tl!("The assistant wants to run {tool}."), &[("tool", &label(id))]),
+            };
+        }
+        // The file commands of a `batch`, by name.
+        "batch" => {
+            let ids: Vec<String> = args
+                .get("commands")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten()
+                .filter_map(|c| c.get("command").and_then(Value::as_str))
+                .filter(|id| id.trim().starts_with("file."))
+                .map(label)
+                .collect();
+            return crate::i18n::fmt(tl!("The assistant wants to run {tool}."), &[("tool", &ids.join(", "))]);
+        }
+        _ => {}
+    }
+    let path = path_in(args);
     match (name, path) {
         ("new_document", _) => tl!("The assistant wants to start a new document: the current one will be closed.").to_string(),
         ("open_document", Some(p)) => crate::i18n::fmt(tl!("The assistant wants to open {path}."), &[("path", &p)]),
@@ -879,7 +915,7 @@ fn update(a: &mut Assistant, u: Update, registry: &wordcraft_engine::Registry) -
         Update::Declined { name } => a.push(Role::Notice, crate::i18n::fmt(tl!("Declined: {tool}"), &[("tool", &name)])),
         Update::Confirm { name, args, reply } => {
             // A new question replaces an unanswered one, which counts as declined.
-            if let Some((_, old)) = a.confirm.replace((confirm_text(&name, &args), reply)) {
+            if let Some((_, old)) = a.confirm.replace((confirm_text(registry, &name, &args), reply)) {
                 let _ = old.send(false);
             }
         }
@@ -892,10 +928,13 @@ fn update(a: &mut Assistant, u: Update, registry: &wordcraft_engine::Registry) -
             a.busy = false;
             a.activity = None;
             a.streaming = None;
-            a.conversation = conversation;
-            // The language may have changed while the turn ran.
+            a.conversation = if std::mem::take(&mut a.drop_conversation_after_turn) { None } else { conversation };
+            // The language and the model may have changed while the turn ran.
             let language = a.language;
             a.set_language(language);
+            if let (Some(m), Some(c)) = (a.model.clone(), &mut a.conversation) {
+                c.agent.set_model(m);
+            }
             if let Some(b) = balance {
                 a.balance = Some(b);
             }
