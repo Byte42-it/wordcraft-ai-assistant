@@ -2762,3 +2762,84 @@ template	Letter	Scrisoare
 	cm	cm
 	mm	mm
 	pi	pi
+
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Bună! Sunt GeenioAI. Cereți-mi să redactez, să rescriu, să rezum sau să formatez, iar eu o fac în document cu comenzile WordCraft.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Pentru a începe, conectați contul {service}: lipiți cheia contului (începe cu {prefix}). Cheia rămâne pe acest computer și nu mai este afișată niciodată.
+	Get an account key or top up your credit at {site}	Obțineți o cheie de cont sau reîncărcați creditul la {site}
+	GeenioAI is not available in this version yet.	GeenioAI nu este încă disponibil în această versiune.
+	Connect your account first: paste its account key in the GeenioAI pane.	Conectați mai întâi contul: lipiți cheia contului în panoul GeenioAI.
+	The assistant is still working on the last request.	Asistentul încă lucrează la ultima solicitare.
+	Running {command}…	Se rulează {command}…
+	Running commands…	Se rulează comenzi…
+	Writing…	Se scrie…
+	Selecting text…	Se selectează textul…
+	Reading the document…	Se citește documentul…
+	Looking up commands…	Se caută comenzi…
+	Starting a new document…	Se începe un document nou…
+	Opening a document…	Se deschide un document…
+	Saving the document…	Se salvează documentul…
+	Working…	Se lucrează…
+	Checking the key…	Se verifică cheia…
+	The assistant wants to start a new document: the current one will be closed.	Asistentul vrea să înceapă un document nou: cel curent va fi închis.
+	The assistant wants to open {path}.	Asistentul vrea să deschidă {path}.
+	The assistant wants to open a document.	Asistentul vrea să deschidă un document.
+	The assistant wants to save the document to {path}.	Asistentul vrea să salveze documentul în {path}.
+	The assistant wants to save the document.	Asistentul vrea să salveze documentul.
+	The assistant wants to run {tool}.	Asistentul vrea să ruleze {tool}.
+	Connected to account {conto}.	Conectat la contul {conto}.
+	What shall we write?	Ce scriem?
+	The account key was changed: now connected to account {conto}.	Cheia contului a fost schimbată: acum este conectat contul {conto}.
+	Declined: {tool}	Refuzat: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	Asistentul a epuizat pașii pentru această tură și s-a oprit; documentul păstrează ce a făcut.
+	GeenioAI settings	Setări GeenioAI
+	New conversation	Conversație nouă
+	Refresh credit	Reîmprospătare credit
+	Top up credit	Reîncărcare credit
+	Credit available: {usd} USD	Credit disponibil: {usd} USD
+	Allow	Permitere
+	Decline	Refuzare
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	Pentru a răspunde, GeenioAI trimite solicitările dvs., textul documentului pe care îl citește și ce returnează comenzile sale către {service} ({destination}) și către furnizorul modelului ales. Permiteți acest lucru pentru WordCraft?
+	Nothing was sent: GeenioAI needs your agreement first.	Nu s-a trimis nimic: GeenioAI are nevoie mai întâi de acordul dvs.
+	Summarize this document	Rezumarea documentului
+	Summarize this document in a few sentences.	Rezumă acest document în câteva propoziții.
+	Suggest a title	Sugerare titlu
+	Suggest three possible titles for this document.	Sugerează trei titluri posibile pentru acest document.
+	Check the tone	Verificare ton
+	Read this document and tell me whether its tone is consistent, and what to improve.	Citește acest document și spune-mi dacă tonul este consecvent și ce ar trebui îmbunătățit.
+	Ask GeenioAI…	Întrebați GeenioAI…
+	Send	Trimitere
+	Account key	Cheie de cont
+	Connect	Conectare
+	Start a new conversation? The messages so far will be cleared.	Începeți o conversație nouă? Mesajele de până acum vor fi șterse.
+	Keep	Păstrare
+	Assistant language	Limba asistentului
+	Automatic (the language you write in)	Automat (limba în care scrieți)
+	The interface language ({language})	Limba interfeței ({language})
+	Suggested by the account ({model})	Sugerat de cont ({model})
+	Suggested by the account	Sugerat de cont
+	Search models…	Căutare modele…
+	Loading models…	Se încarcă modelele…
+	The models could not be loaded	Modelele nu au putut fi încărcate
+	Connected account: {conto}	Cont conectat: {conto}
+	Reading the account…	Se citește contul…
+	No account key is set	Nu este setată nicio cheie de cont
+	Change account key	Schimbare cheie de cont
+	New account key	Cheie de cont nouă
+	Change key	Schimbare cheie
+	Draft with GeenioAI	Redactare cu GeenioAI
+	Connect your account in the GeenioAI pane to start.	Conectați contul în panoul GeenioAI pentru a începe.
+	Open GeenioAI	Deschidere GeenioAI
+	Describe what you'd like to write	Descrieți ce doriți să scrieți
+	Generate	Generare
+	Rewrite the selection	Rescrierea selecției
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Rescrie textul selectat ca să se citească mai bine, păstrând sensul, limba și formatarea.
+	Make it shorter	Scurtare
+	Make the selected text shorter, keeping its meaning, language and formatting.	Scurtează textul selectat, păstrând sensul, limba și formatarea.
+	Fix spelling and grammar	Corectare ortografie și gramatică
+	Fix the spelling and grammar of the selected text; change nothing else.	Corectează ortografia și gramatica textului selectat; nu schimba nimic altceva.
+	Summarize the selection	Rezumarea selecției
+	Summarize the selected text in a few sentences, in the chat.	Rezumă textul selectat în câteva propoziții, în conversație.
+	Rewrite this paragraph	Rescrierea paragrafului
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Rescrie paragraful în care se află cursorul ca să se citească mai bine, păstrând sensul, limba și formatarea.

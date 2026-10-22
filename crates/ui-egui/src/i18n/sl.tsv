@@ -2763,3 +2763,84 @@ preview	Title	Naslov
 	{names} and {n} more	{names} and {n} more
 	{name} options	{name} options
 	{width} × {height} pixels	{width} × {height} pixels
+
+# GeenioAI, the AI assistant (Home › GeenioAI, the pane and the margin icon)
+	GeenioAI	GeenioAI
+	Hi! I'm GeenioAI. Ask me to draft, rewrite, summarize or format, and I'll do it in the document with WordCraft's commands.	Pozdravljeni! Sem GeenioAI. Prosite me, naj pripravim osnutek, prepišem, povzamem ali oblikujem besedilo, in to bom naredil v dokumentu z ukazi programa WordCraft.
+	To start, connect your {service} account: paste its account key (it starts with {prefix}). The key stays on this computer and is never shown again.	Za začetek povežite svoj račun {service}: prilepite ključ računa (začne se s {prefix}). Ključ ostane v tem računalniku in se nikoli več ne prikaže.
+	Get an account key or top up your credit at {site}	Ključ računa ali dobroimetje dobite na {site}
+	GeenioAI is not available in this version yet.	GeenioAI v tej različici še ni na voljo.
+	Connect your account first: paste its account key in the GeenioAI pane.	Najprej povežite svoj račun: prilepite ključ računa v podokno GeenioAI.
+	The assistant is still working on the last request.	Pomočnik še dela na zadnji zahtevi.
+	Running {command}…	Izvajanje: {command}…
+	Running commands…	Izvajanje ukazov…
+	Writing…	Pisanje…
+	Selecting text…	Izbiranje besedila…
+	Reading the document…	Branje dokumenta…
+	Looking up commands…	Iskanje ukazov…
+	Starting a new document…	Začenjanje novega dokumenta…
+	Opening a document…	Odpiranje dokumenta…
+	Saving the document…	Shranjevanje dokumenta…
+	Working…	Delo poteka…
+	Checking the key…	Preverjanje ključa…
+	The assistant wants to start a new document: the current one will be closed.	Pomočnik želi začeti nov dokument: trenutni bo zaprt.
+	The assistant wants to open {path}.	Pomočnik želi odpreti: {path}.
+	The assistant wants to open a document.	Pomočnik želi odpreti dokument.
+	The assistant wants to save the document to {path}.	Pomočnik želi shraniti dokument v: {path}.
+	The assistant wants to save the document.	Pomočnik želi shraniti dokument.
+	The assistant wants to run {tool}.	Pomočnik želi izvesti: {tool}.
+	Connected to account {conto}.	Povezano z računom {conto}.
+	What shall we write?	Kaj bomo pisali?
+	The account key was changed: now connected to account {conto}.	Ključ računa je bil zamenjan: zdaj je povezan račun {conto}.
+	Declined: {tool}	Zavrnjeno: {tool}
+	The assistant ran out of steps for this turn and stopped; the document keeps what it did.	Pomočniku je za ta krog zmanjkalo korakov in se je ustavil; dokument ohrani, kar je naredil.
+	GeenioAI settings	Nastavitve GeenioAI
+	New conversation	Nov pogovor
+	Refresh credit	Osveži dobroimetje
+	Top up credit	Dopolni dobroimetje
+	Credit available: {usd} USD	Razpoložljivo dobroimetje: {usd} USD
+	Allow	Dovoli
+	Decline	Zavrni
+	To answer, GeenioAI sends your requests, the document text it reads and what its commands return to {service} ({destination}) and to the provider of the chosen model. Allow this for WordCraft?	Za odgovor GeenioAI pošlje vaše zahteve, besedilo dokumenta, ki ga prebere, in rezultate svojih ukazov storitvi {service} ({destination}) in ponudniku izbranega modela. Ali to dovolite za WordCraft?
+	Nothing was sent: GeenioAI needs your agreement first.	Nič ni bilo poslano: GeenioAI najprej potrebuje vaše soglasje.
+	Summarize this document	Povzemi ta dokument
+	Summarize this document in a few sentences.	Povzemi ta dokument v nekaj stavkih.
+	Suggest a title	Predlagaj naslov
+	Suggest three possible titles for this document.	Predlagaj tri možne naslove za ta dokument.
+	Check the tone	Preveri slog
+	Read this document and tell me whether its tone is consistent, and what to improve.	Preberi ta dokument in mi povej, ali je slog dosleden in kaj bi bilo treba izboljšati.
+	Ask GeenioAI…	Vprašajte GeenioAI…
+	Send	Pošlji
+	Account key	Ključ računa
+	Connect	Poveži
+	Start a new conversation? The messages so far will be cleared.	Želite začeti nov pogovor? Dosedanja sporočila bodo izbrisana.
+	Keep	Obdrži
+	Assistant language	Jezik pomočnika
+	Automatic (the language you write in)	Samodejno (jezik, v katerem pišete)
+	The interface language ({language})	Jezik vmesnika ({language})
+	Suggested by the account ({model})	Predlaga račun ({model})
+	Suggested by the account	Predlaga račun
+	Search models…	Iskanje modelov…
+	Loading models…	Nalaganje modelov…
+	The models could not be loaded	Modelov ni bilo mogoče naložiti
+	Connected account: {conto}	Povezani račun: {conto}
+	Reading the account…	Branje računa…
+	No account key is set	Ključ računa ni nastavljen
+	Change account key	Zamenjaj ključ računa
+	New account key	Nov ključ računa
+	Change key	Zamenjaj ključ
+	Draft with GeenioAI	Osnutek z GeenioAI
+	Connect your account in the GeenioAI pane to start.	Za začetek povežite svoj račun v podoknu GeenioAI.
+	Open GeenioAI	Odpri GeenioAI
+	Describe what you'd like to write	Opišite, kaj bi radi napisali
+	Generate	Ustvari
+	Rewrite the selection	Prepiši izbor
+	Rewrite the selected text so it reads better, keeping its meaning, language and formatting.	Prepiši izbrano besedilo, da se bo bolje bralo, in ohrani njegov pomen, jezik in oblikovanje.
+	Make it shorter	Skrajšaj
+	Make the selected text shorter, keeping its meaning, language and formatting.	Skrajšaj izbrano besedilo in ohrani njegov pomen, jezik in oblikovanje.
+	Fix spelling and grammar	Popravi črkovanje in slovnico
+	Fix the spelling and grammar of the selected text; change nothing else.	Popravi črkovanje in slovnico izbranega besedila; ničesar drugega ne spreminjaj.
+	Summarize the selection	Povzemi izbor
+	Summarize the selected text in a few sentences, in the chat.	Povzemi izbrano besedilo v nekaj stavkih, v pogovoru.
+	Rewrite this paragraph	Prepiši ta odstavek
+	Rewrite the paragraph the caret is in so it reads better, keeping its meaning, language and formatting.	Prepiši odstavek, v katerem je kazalec, da se bo bolje bral, in ohrani njegov pomen, jezik in oblikovanje.
