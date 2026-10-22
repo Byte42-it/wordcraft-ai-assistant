@@ -1107,7 +1107,7 @@ dependencies = [
 [[package]]
 name = "craft-ai-fantastico"
 version = "0.1.0"
-source = "git+https://github.com/Byte42-it/craft-ai-fantastico?rev=497b24e2c50d9f52fd0ac5f9aba8edc0ef1bb656#497b24e2c50d9f52fd0ac5f9aba8edc0ef1bb656"
+source = "git+https://github.com/Byte42-it/craft-ai-fantastico?rev=24f907ace58bb87a2d54a08303973b37e2c6801f#24f907ace58bb87a2d54a08303973b37e2c6801f"
 dependencies = [
  "craft-ai-core",
  "craft-ai-http",
