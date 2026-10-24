@@ -722,30 +722,25 @@ fn run<S: AsRef<OsStr>>(args: &[S]) -> Result<(), Failure> {
                 config.max_steps = n;
             }
             let mut observer = AskObserver { yes: a.yes, printed: String::new() };
-            let turn = wordcraft_assistant::Agent::new(config).send(&mut provider, &mut backend, &a.prompt, &mut observer);
-            if let Ok(t) = &turn {
-                // Streamed text is on stdout already; what wasn't streamed (or differs) follows.
-                let reply = t.reply.trim().to_string();
-                if observer.printed.trim() == reply {
-                    write_stdout(|o| writeln!(o))?;
-                } else {
-                    let gap = if observer.printed.is_empty() { "" } else { "\n" };
-                    write_stdout(|o| writeln!(o, "{gap}{reply}"))?;
-                }
-            }
-            // Write what was done even when the turn stopped early: the file was asked for.
-            let saved = a.save.as_ref().map(|p| {
-                let r = if p.to_ascii_lowercase().ends_with(".png") {
-                    backend.session.run("file.exportPng", &json!({"path": p}))
-                } else {
-                    backend.session.run("file.save", &json!({"path": p}))
-                };
-                r.map(|_| p.clone()).map_err(|e| format!("{p}: {e}"))
-            });
-            if let Some(Ok(p)) = &saved {
-                eprintln!("wrote {p}");
-            }
-            ask_result(turn.map(|_| ()).map_err(|e| e.to_string()), saved).map_err(Into::into)
+            let turn = wordcraft_assistant::Agent::new(config)
+                .send(&mut provider, &mut backend, &a.prompt, &mut observer)
+                .map(|t| t.reply)
+                .map_err(|e| e.to_string());
+            finish_ask(
+                turn,
+                &observer.printed,
+                |text| write_stdout(|o| writeln!(o, "{text}")),
+                || {
+                    a.save.as_ref().map(|p| {
+                        let r = if p.to_ascii_lowercase().ends_with(".png") {
+                            backend.session.run("file.exportPng", &json!({"path": p}))
+                        } else {
+                            backend.session.run("file.save", &json!({"path": p}))
+                        };
+                        r.map(|_| p.clone()).map_err(|e| format!("{p}: {e}"))
+                    })
+                },
+            )
         }
         "--version" | "-V" => write_stdout(|o| writeln!(o, "wordcraft-cli {}", env!("CARGO_PKG_VERSION"))),
         "" | "help" | "--help" | "-h" => write_stdout(|o| write!(o, "{USAGE}")),
@@ -764,6 +759,37 @@ struct AskArgs {
     yes: bool,
     author: Option<String>,
     save: Option<String>,
+}
+
+/// The end of `ask`, once the turn is over: the part of the reply that wasn't streamed goes to
+/// stdout (`print`), then the document is written (`save`) even when the turn stopped early or
+/// stdout is closed (`ask … | head -1`): the file was asked for, and a reader that left doesn't
+/// cancel it. A closed stdout is reported last, after the turn's and the save's errors.
+fn finish_ask(
+    turn: Result<String, String>,
+    printed: &str,
+    print: impl FnOnce(&str) -> Result<(), Failure>,
+    save: impl FnOnce() -> Option<Result<String, String>>,
+) -> Result<(), Failure> {
+    let shown = match &turn {
+        Ok(reply) => {
+            // Streamed text is on stdout already; what wasn't streamed (or differs) follows.
+            let reply = reply.trim();
+            if printed.trim() == reply {
+                print("")
+            } else {
+                let gap = if printed.is_empty() { "" } else { "\n" };
+                print(&format!("{gap}{reply}"))
+            }
+        }
+        Err(_) => Ok(()),
+    };
+    let saved = save();
+    if let Some(Ok(p)) = &saved {
+        eprintln!("wrote {p}");
+    }
+    ask_result(turn.map(|_| ()), saved)?;
+    shown
 }
 
 /// How `ask` ended: the turn's error and the save's, both when both failed (the check before the
@@ -1024,6 +1050,36 @@ mod tests {
         assert_eq!(ask_result(Ok(()), Some(Err("s".into()))), Err("s".into()));
         assert_eq!(ask_result(Ok(()), Some(Ok("out.docx".into()))), Ok(()));
         assert_eq!(ask_result(Ok(()), None), Ok(()));
+    }
+
+    /// `ask … | head -1`: the reader leaves, the document is still written.
+    #[test]
+    fn ask_saves_even_when_stdout_is_closed() {
+        let mut saved = false;
+        let r = finish_ask(
+            Ok("hi".into()),
+            "",
+            |_| Err(Failure::StdoutClosed),
+            || {
+                saved = true;
+                Some(Ok("out.docx".into()))
+            },
+        );
+        assert!(saved);
+        assert_eq!(r, Err(Failure::StdoutClosed));
+        // A failed save is the error worth reporting, not the closed stdout.
+        let r = finish_ask(Ok("hi".into()), "", |_| Err(Failure::StdoutClosed), || Some(Err("out.docx: disk full".into())));
+        assert_eq!(r, Err(Failure::Error("out.docx: disk full".into())));
+        // What was streamed isn't printed again; what wasn't follows on its own line.
+        let mut shown = Vec::new();
+        for (reply, streamed) in [("hi", "hi"), ("hi there", "hi")] {
+            let print = |t: &str| {
+                shown.push(t.to_string());
+                Ok(())
+            };
+            finish_ask(Ok(reply.into()), streamed, print, || None).unwrap();
+        }
+        assert_eq!(shown, ["", "\nhi there"]);
     }
 
     /// A bad output is caught before any work (`run`, and `ask` before the model is asked).
