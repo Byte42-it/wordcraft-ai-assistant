@@ -997,12 +997,8 @@ fn bubble(ui: &mut egui::Ui, m: &Message, t: &Tokens, account_url: &str) {
     }
 }
 
-/// The pane's body (inside the right panel [`crate::panes::show`] opens).
+/// The pane's body ([`crate::panes::Pane::Assistant`]; the pane host draws its title bar).
 pub fn show(app: &mut WordApp, ui: &mut egui::Ui) {
-    if crate::panes::header(ui, "GeenioAI") {
-        app.assistant.open = false;
-        return;
-    }
     let t = Tokens::get(ui.ctx());
     app.assistant.greet();
     let Some(host) = app.assistant.host.clone() else {
@@ -1165,7 +1161,7 @@ fn clear_question(app: &mut WordApp, ctx: &egui::Context) {
     }
     let t = Tokens::get(ctx);
     let mut answer = None;
-    let modal = egui::Modal::new(egui::Id::new("assistant-clear")).show(ctx, |ui| {
+    let modal = egui::Modal::new(egui::Id::unique("assistant-clear")).show(ctx, |ui| {
         ui.set_width(320.0);
         ui.label(RichText::new(tl!("New conversation")).font(semibold(13.0)));
         ui.add_space(4.0);
@@ -1199,7 +1195,7 @@ fn settings_window(app: &mut WordApp, ctx: &egui::Context, has_key: bool) {
     let mut open = true;
     let mut change = false;
     egui::Window::new(tl!("GeenioAI settings"))
-        .id(egui::Id::new("assistant-settings"))
+        .id(egui::Id::unique("assistant-settings"))
         .open(&mut open)
         .collapsible(false)
         .resizable(false)
@@ -1369,7 +1365,7 @@ pub fn floating_icon(app: &mut WordApp, ctx: &egui::Context, viewport: Rect) {
     let t = Tokens::get(ctx);
     let selected = !app.session.sel.is_collapsed() && !app.session.selected_text().trim().is_empty();
     let empty_para = !selected && app.session.doc.para_at(&app.session.sel.focus).is_some_and(|p| p.plain_text().trim().is_empty());
-    egui::Area::new(egui::Id::new("wc_assistant_icon")).order(egui::Order::Foreground).interactable(true).fixed_pos(rect.min).show(ctx, |ui| {
+    egui::Area::new(egui::Id::unique("wc_assistant_icon")).order(egui::Order::Foreground).interactable(true).fixed_pos(rect.min).show(ctx, |ui| {
         let (r, resp) = ui.allocate_exact_size(rect.size(), Sense::click());
         let hovered = resp.hovered();
         let p = ui.painter();
