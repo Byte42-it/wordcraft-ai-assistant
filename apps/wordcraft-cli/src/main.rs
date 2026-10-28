@@ -178,8 +178,6 @@ fn positionals<'a>(args: &'a [String], specs: &[OptionSpec]) -> Vec<&'a String> 
     out
 }
 
-/// A headless session in the system region: every way the CLI starts one gives `file.new` the
-/// same paper (#1381).
 /// Whether `out` can be written: its folder exists, it isn't a folder, and the document can take
 /// its format. Checked before any work, so a bad output path costs nothing.
 fn check_output(out: &str, doc: &wordcraft_doc::Document) -> Result<(), String> {
@@ -196,6 +194,8 @@ fn check_output(out: &str, doc: &wordcraft_doc::Document) -> Result<(), String> 
     Ok(())
 }
 
+/// A headless session in the system region: every way the CLI starts one gives `file.new` the
+/// same paper (#1381).
 fn session(doc: wordcraft_doc::Document) -> Session {
     let mut s = Session::new(doc);
     s.system_region = system_region();
@@ -432,6 +432,27 @@ fn valid_connect_addr(addr: &str) -> bool {
     !host.is_empty() && port.parse::<u16>().is_ok()
 }
 
+fn load_run_script(rest: &[String], script_path: Option<&Path>) -> Result<Option<script::Script>, Failure> {
+    match arg_value(rest, "--script") {
+        Some(path) if !path.starts_with("--") => {
+            let source = script_path.unwrap_or(Path::new(&path));
+            Ok(Some(script::load(source)?))
+        }
+        _ if rest.iter().any(|arg| arg == "--script") => Err("run: --script requires a value".into()),
+        _ => Ok(None),
+    }
+}
+
+fn run_source_paths(rest: &[String], script: Option<&script::Script>) -> (Option<String>, Option<String>) {
+    // A source named on the command line wins over both of the script's.
+    let (mut from_file, mut from_template) = (arg_value(rest, "--file"), arg_value(rest, "--template"));
+    if from_file.is_none() && from_template.is_none() {
+        from_file = script.and_then(|loaded| loaded.file.clone());
+        from_template = script.and_then(|loaded| loaded.template.clone());
+    }
+    (from_file, from_template)
+}
+
 /// Run the subcommand named by `args` (the command line after the program name). Files named
 /// there are opened by their real names, which may not be valid Unicode.
 fn run<S: AsRef<OsStr>>(args: &[S]) -> Result<(), Failure> {
@@ -515,17 +536,8 @@ fn run<S: AsRef<OsStr>>(args: &[S]) -> Result<(), Failure> {
             let page = parse_page_arg("run", &rest)?;
             let scale = parse_scale_arg("run", &rest)?;
             let password = password_from(&rest)?;
-            let script = match arg_value(&rest, "--script") {
-                Some(path) if !path.starts_with("--") => Some(script::load(script_path.as_deref().unwrap_or(Path::new(&path)))?),
-                _ if rest.iter().any(|a| a == "--script") => return Err("run: --script requires a value".into()),
-                _ => None,
-            };
-            // A source named on the command line wins over both of the script's.
-            let (mut from_file, mut from_template) = (arg_value(&rest, "--file"), arg_value(&rest, "--template"));
-            if from_file.is_none() && from_template.is_none() {
-                from_file = script.as_ref().and_then(|c| c.file.clone());
-                from_template = script.as_ref().and_then(|c| c.template.clone());
-            }
+            let script = load_run_script(&rest, script_path.as_deref())?;
+            let (from_file, from_template) = run_source_paths(&rest, script.as_ref());
             let mut s = match (from_file, from_template) {
                 (Some(f), _) => open(&f, password.as_deref())?,
                 // Both go through `file.new`, which puts a blank document on the region's paper (#3152).
@@ -715,71 +727,76 @@ fn run<S: AsRef<OsStr>>(args: &[S]) -> Result<(), Failure> {
             }
             Ok(())
         }
-        "ask" => {
-            let (roots, rest) = automation_roots("ask", &rest)?;
-            validate_options("ask", &rest, ASK_OPTIONS)?;
-            let a = parse_ask_args(&rest)?;
-            let key = std::env::var("FANTASTICO_KEY").ok().filter(|v| !v.trim().is_empty()).ok_or("ask needs a FANTASTICO key in $FANTASTICO_KEY")?;
-            let opts = fantastico_sdk::Options {
-                title: "WordCraft".into(),
-                referer: "https://github.com/storytold/wordcraft".into(),
-                ..fantastico_sdk::Options::default()
-            };
-            let mut provider = wordcraft_fantastico::Streaming::new(key, opts).map_err(|e| e.message)?;
-            // The account suggests a model; without one (a project key, or an account that names
-            // none) the request leaves it empty and the model the key was minted for answers.
-            let model = match (&a.model, provider.client().surface()) {
-                (Some(m), _) => m.clone(),
-                (None, fantastico_sdk::Surface::Edge) => provider.client().config().map_err(|e| e.message)?.model.unwrap_or_default(),
-                (None, fantastico_sdk::Surface::Runtime) => String::new(),
-            };
-            let mut s = match (&a.file, &a.template) {
-                (Some(f), _) => open(f, password_from(&rest)?.as_deref())?,
-                (None, Some(t)) => {
-                    let mut s = session(wordcraft_doc::Document::new());
-                    s.run("file.new", &json!({"template": t})).map_err(|e| e.to_string())?;
-                    s
-                }
-                _ => session(wordcraft_doc::Document::new()),
-            };
-            if let Some(name) = &a.author {
-                set_author(&mut s, name)?;
-            }
-            // Before the model is asked (and paid): an output that can't be written fails now.
-            if let Some(out) = &a.save {
-                check_output(out, &s.doc)?;
-            }
-            let mut backend = ask_backend(roots);
-            backend.session = s;
-            let mut config = wordcraft_assistant::Config::new(model);
-            if let Some(n) = a.max_steps {
-                config.max_steps = n;
-            }
-            let mut observer = AskObserver { yes: a.yes, printed: String::new() };
-            let turn = wordcraft_assistant::Agent::new(config)
-                .send(&mut provider, &mut backend, &a.prompt, &mut observer)
-                .map(|t| t.reply)
-                .map_err(|e| e.to_string());
-            finish_ask(
-                turn,
-                &observer.printed,
-                |text| write_stdout(|o| writeln!(o, "{text}")),
-                || {
-                    a.save.as_ref().map(|p| {
-                        let r = if p.to_ascii_lowercase().ends_with(".png") {
-                            backend.session.run("file.exportPng", &json!({"path": p}))
-                        } else {
-                            backend.session.run("file.save", &json!({"path": p}))
-                        };
-                        r.map(|_| p.clone()).map_err(|e| format!("{p}: {e}"))
-                    })
-                },
-            )
-        }
+        "ask" => ask(&rest, &open),
         "--version" | "-V" => write_stdout(|o| writeln!(o, "wordcraft-cli {}", env!("CARGO_PKG_VERSION"))),
         "" | "help" | "--help" | "-h" => write_stdout(|o| write!(o, "{USAGE}")),
         other => Err(format!("unknown command `{other}`\n\n{USAGE}").into()),
     }
+}
+
+/// `wordcraft-cli ask`: GeenioAI carries out one prompt on a document through a FANTASTICO account.
+///
+/// `open` opens `--file` by its real name, as in `run`.
+fn ask(rest: &[String], open: &dyn Fn(&str, Option<&str>) -> Result<Session, String>) -> Result<(), Failure> {
+    let (roots, rest) = automation_roots("ask", rest)?;
+    validate_options("ask", &rest, ASK_OPTIONS)?;
+    let a = parse_ask_args(&rest)?;
+    let key = std::env::var("FANTASTICO_KEY").ok().filter(|v| !v.trim().is_empty()).ok_or("ask needs a FANTASTICO key in $FANTASTICO_KEY")?;
+    let opts = fantastico_sdk::Options {
+        title: "WordCraft".into(),
+        referer: "https://github.com/storytold/wordcraft".into(),
+        ..fantastico_sdk::Options::default()
+    };
+    let mut provider = wordcraft_fantastico::Streaming::new(key, opts).map_err(|e| e.message)?;
+    // The account suggests a model; without one (a project key, or an account that names
+    // none) the request leaves it empty and the model the key was minted for answers.
+    let model = match (&a.model, provider.client().surface()) {
+        (Some(m), _) => m.clone(),
+        (None, fantastico_sdk::Surface::Edge) => provider.client().config().map_err(|e| e.message)?.model.unwrap_or_default(),
+        (None, fantastico_sdk::Surface::Runtime) => String::new(),
+    };
+    let mut s = match (&a.file, &a.template) {
+        (Some(f), _) => open(f, password_from(&rest)?.as_deref())?,
+        (None, Some(t)) => {
+            let mut s = session(wordcraft_doc::Document::new());
+            s.run("file.new", &json!({"template": t})).map_err(|e| e.to_string())?;
+            s
+        }
+        _ => session(wordcraft_doc::Document::new()),
+    };
+    if let Some(name) = &a.author {
+        set_author(&mut s, name)?;
+    }
+    // Before the model is asked (and paid): an output that can't be written fails now.
+    if let Some(out) = &a.save {
+        check_output(out, &s.doc)?;
+    }
+    let mut backend = ask_backend(roots);
+    backend.session = s;
+    let mut config = wordcraft_assistant::Config::new(model);
+    if let Some(n) = a.max_steps {
+        config.max_steps = n;
+    }
+    let mut observer = AskObserver { yes: a.yes, printed: String::new() };
+    let turn = wordcraft_assistant::Agent::new(config)
+        .send(&mut provider, &mut backend, &a.prompt, &mut observer)
+        .map(|t| t.reply)
+        .map_err(|e| e.to_string());
+    finish_ask(
+        turn,
+        &observer.printed,
+        |text| write_stdout(|o| writeln!(o, "{text}")),
+        || {
+            a.save.as_ref().map(|p| {
+                let r = if p.to_ascii_lowercase().ends_with(".png") {
+                    backend.session.run("file.exportPng", &json!({"path": p}))
+                } else {
+                    backend.session.run("file.save", &json!({"path": p}))
+                };
+                r.map(|_| p.clone()).map_err(|e| format!("{p}: {e}"))
+            })
+        },
+    )
 }
 
 /// `ask`'s arguments: one prompt and its options.

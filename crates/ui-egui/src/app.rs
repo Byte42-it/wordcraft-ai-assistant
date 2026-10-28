@@ -1,7 +1,14 @@
 use super::clock::now_ms;
+#[cfg(not(target_arch = "wasm32"))]
+use super::file_browser;
 use super::services::Services;
 use super::state::{AutoSaveBlock, DefaultApp, PromptSave, SaveChoice, keeps_everything};
-use super::*;
+use super::{
+    AwaitingSave, ControlRequest, DEFAULT_TAB, MAX_DICTIONARY, MAX_RECENT, QUIT, SaveInFlight, Session, UiState, Value, WordApp, applied_font,
+    async_saves, backstage, canvas, chrome, colors, content_controls, crop, desktop_theme, dialogs, dialogs_table_style, documents, file_dialogs,
+    i18n, json, keys, keytips, options, panes, paste_picture, printing, push_recent_font, read_aloud, recent_fonts_from, ribbon, scroll,
+    system_clipboard, table_pen, theme, updates_ui, widgets, window_ui, windows, zotero,
+};
 
 mod commands;
 mod control;
@@ -123,7 +130,7 @@ impl WordApp {
             quit_requested: false,
             autosave: true,
             zotero: zotero::ZoteroLink::default(),
-            assistant: assistant::Assistant::default(),
+            assistant: crate::assistant::Assistant::default(),
             ctx: None,
             ime_origin: false,
             read_aloud_error: None,
@@ -356,7 +363,7 @@ impl WordApp {
                 self.print_feedback();
             }
         }
-        assistant::tick(self, ctx);
+        crate::assistant::tick(self, ctx);
         zotero::poll(self, ctx);
         read_aloud::poll(self, ctx);
         self.clear_stale_change_picture();

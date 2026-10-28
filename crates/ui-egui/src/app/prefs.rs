@@ -1,4 +1,4 @@
-use super::*;
+use super::{DEFAULT_TAB, MAX_DICTIONARY, UiState, WordApp, desktop_theme, recent_fonts_from, theme};
 
 /// What the operating system says about light and dark. macOS and Windows answer through winit;
 /// winit reports nothing on Linux, where the desktop portal does ([`desktop_theme`]). `None` means
@@ -83,7 +83,7 @@ impl WordApp {
         self.session.view.draw.pens = std::mem::take(&mut self.ui.ink_pens);
         // The assistant owns its settings from here on; `prefs` copies them back when saving.
         // Junk values read as the defaults.
-        self.assistant.set_language(assistant::Language::parse(&self.ui.assistant_language).unwrap_or_default());
+        self.assistant.set_language(crate::assistant::Language::parse(&self.ui.assistant_language).unwrap_or_default());
         self.assistant.set_model(Some(std::mem::take(&mut self.ui.assistant_model)));
     }
 
